@@ -56,7 +56,7 @@
           <div v-else>
             <!-- Début docks -->
             <v-card v-for="dock in docks" :key="dock.title" class="mx-auto" tile>
-              <v-list-group prepend-icon="mdi-plus-circle" value="false" v-model="dock.active">
+              <v-list-group prepend-icon="mdi-chevron-right-circle" value="false" v-model="dock.active">
                 <template v-slot:activator>
                   <v-list-item-title class="font-weight-light headline">{{ dock.title }}</v-list-item-title>
                   <!-- <v-list-item-action style="position:absolute; left:1%" class="my-auto">
@@ -214,27 +214,27 @@ export default {
       oldTitle: '',
       placeholder: ''
     },
-    docks: [
-      { title: 'User',
-        active: false,
-        input: {
-          mode: 'add',
-          oldTitle: '',
-          placeholder: ''
-        },
-        decks: [
-          { title: 'Capitals', count: 5 },
-          { title: 'History', count: 3 },
-          { title: 'Bash', count: 129 }
-        ],
-        count: 3 }
-    ],
+    docks: [],
     rules: {
       required: value => !!value || 'Required.',
       min: v => v.length >= 2 || 'Min 2 characters'
-    }
+    },
+    url: 'http://localhost:4000'
   }),
   methods: {
+    async getStocks () {
+      const response = await this.axios.post(this.url + '/stock/getStocks', {
+        login: 'admin',
+        password: 'changethispassword'
+      })
+      this.docks = response.data.docks
+      console.log(response.data)
+    },
+    updateStocks () {
+      this.axios.post(this.url + '/stock/updateStocks', {
+        docks: this.docks
+      })
+    },
     dfind (place, kdock, kdeck = -1) {
       if (place === 'dock') {
         return this.docks.find(dock => dock.title === kdock)
@@ -261,6 +261,7 @@ export default {
           count: 0 })
       } else pack.push({ title: input.placeholder, count: 0 })
       input.placeholder = ''
+      this.updateStocks()
     },
     update (place, kdock = -1) {
       var pack = (place === 'dock') ? this.docks : this.dfind('dock', kdock).decks
@@ -271,6 +272,7 @@ export default {
       var newInput = { mode: 'add', oldTitle: '', placeholder: '' }
       if (place === 'dock') this.dockInput = newInput
       else this.dfind('dock', kdock).input = newInput
+      this.updateStocks()
     },
     updateInput (place, kdock, kdeck = -1) {
       var packObj = (place === 'dock') ? this.dfind('dock', kdock) : this.dfind('deck', kdock, kdeck)
@@ -286,7 +288,11 @@ export default {
       var itemToDelete = (place === 'dock') ? this.dfind('dock', kdock) : this.dfind('deck', kdock, kdeck)
       if (placeToSearch === undefined || itemToDelete === undefined) return
       placeToSearch.splice(placeToSearch.indexOf(itemToDelete), 1)
+      this.updateStocks()
     }
+  },
+  created () {
+    this.getStocks()
   }
   // components: {
   //   HelloWorld
