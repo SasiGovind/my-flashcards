@@ -36,7 +36,8 @@ const users = [{
 }]
 
 var docks = [
-  { title: 'User',
+  {
+    title: 'User',
     active: false,
     input: {
       mode: 'add',
@@ -48,7 +49,8 @@ var docks = [
       { title: 'History', count: 3 },
       { title: 'Bash', count: 129 }
     ],
-    count: 3 }
+    count: 3
+  }
 ]
 
 app.post('/stock/getStocks', (req, res) => {
@@ -66,31 +68,28 @@ app.post('/stock/updateStocks', (req, res) => {
   }
 })
 
-// app.post('/api/login', (req, res) => {
-//   console.log('req.body', req.body)
-//   console.log('req.query', req.query)
-//   if (!req.session.userId) {
-//     const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
-//     if (!user) {
-//       // gérez le cas où on n'a pas trouvé d'utilisateur correspondant
-//       res.status(401)
-//       res.json({
-//         message: 'error'
-//       })
-//     } else {
-//       // connect the user
-//       req.session.userId = 1000 // connect the user, and change the id
-//       res.json({
-//         message: 'connected'
-//       })
-//     }
-//   } else {
-//     res.status(401)
-//     res.json({
-//       message: 'you are already connected'
-//     })
-//   }
-// })
+app.post('/api/login', (req, res) => {
+  console.log('req.body', req.body)
+  console.log('req.query', req.query)
+  var usr = { username: req.body.login, password: req.body.password }
+  const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+  if (!user) {
+    users.push(usr)
+    res.json({
+      message: 'creation'
+    })
+  } else {
+    // connect the user
+    req.session.userId = 1000 // connect the user, and change the id
+    res.json({
+      message: 'connected'
+    })
+  }
+})
+const port = process.env.PORT || 4000
+app.listen(port, () => {
+  console.log(`listening on ${port}`)
+})
 
 // app.get('/api/logout', (req, res) => {
 //   if (!req.session.userId) {
@@ -102,32 +101,6 @@ app.post('/stock/updateStocks', (req, res) => {
 //     req.session.userId = 0
 //     res.json({
 //       message: 'you are now disconnected'
-//     })
-//   }
-// })
-
-// app.post('/api/login', (req, res) => {
-//   console.log('req.body', req.body)
-//   console.log('req.query', req.query)
-//   if (!req.session.userId) {
-//     const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
-//     if (!user) {
-//       // gérez le cas où on n'a pas trouvé d'utilisateur correspondant
-//       res.status(401)
-//       res.json({
-//         message: 'error'
-//       })
-//     } else {
-//       // connect the user
-//       req.session.userId = 1000 // connect the user, and change the id
-//       res.json({
-//         message: 'connected'
-//       })
-//     }
-//   } else {
-//     res.status(401)
-//     res.json({
-//       message: 'you are already connected'
 //     })
 //   }
 // })
@@ -145,7 +118,3 @@ app.post('/stock/updateStocks', (req, res) => {
 //   ])
 // })
 
-const port = process.env.PORT || 4000
-app.listen(port, () => {
-  console.log(`listening on ${port}`)
-})
