@@ -68,8 +68,4 @@ export default {
 <style scoped
 #form {
 }
-</style><template>
-  <div class="login">
-    <h1>This is an login page</h1>
-  </div>
-</template>
+</style>
