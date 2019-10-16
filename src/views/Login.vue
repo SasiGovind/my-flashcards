@@ -37,23 +37,18 @@ export default {
       min: v => v.length >= 8 || 'Min 8 characters'
     }
   }),
-
   methods: {
     async login() {
       // connecter l'utilisateur
-
       const response = await this.axios.post(this.url + "/api/login", {
         login: this.name ,
         password: this.password,
       }); 
-
       alert("Le message est " + response.data.message)
-
       if (response.data.message === 'creation') {
         alert("Compte créé ! Vous avez été connecté à votre compte " + this.name +" !");
         this.$router.push('/')
       }
-
        if (response.data.message === 'connected'){
         this.$router.push('/')
         alert("Vous avez été connecté à votre compte " + this.name +" !");
