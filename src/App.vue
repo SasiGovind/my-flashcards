@@ -7,20 +7,9 @@
       <router-link to="/settings">Settings</router-link> -->
       <router-view/>
     </v-content>
-    <footer><baseLayout/></footer>
+    <baseLayout/>
   </v-app>
 </template>
-
-<style>
-footer {
-  color: white;
-  background:rgb(56, 122, 243);
-  position: absolute;
-  bottom: 0;
-  padding: 30px;
-  width: 100%
-}
-</style>
 
 <script>
 import NavBar from '@/components/NavBar'

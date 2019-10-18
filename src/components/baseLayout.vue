@@ -1,29 +1,33 @@
-
 <template #footer>
-    <div>
-        <p>
-            <strong>
-                <span style="float:left">Nous contacter</span>
-            </strong>
-            <br><br>
-            <strong>
-                <span style="float:left">Notre équipe</span>
-                <span style="float:right">Date: {{date}}</span>
-            </strong>
-            <br><br>
-            <strong>
-                <span style="float:left">Confidentialité</span>
-                <span style="float:right">Langue sélectionnée:</span>
-            </strong>
-            <select v-model="langues" style="background:white; float:right">
+<footer>
+    <strong>
+        <span style="float:left">Nous contacter</span>
+        <br><br>
+        <span style="float:left">Notre équipe</span>
+        <span style="float:right">Date: {{date}}</span>
+    <br><br>
+        <span style="float:left">Confidentialité</span>
+        <span style="float:right">Langue sélectionnée: 
+            <select v-model="langues" style="background:white">
                 <option disabled value="">Choisir</option>
                 <option>Français</option>
                 <option>Anglais</option>
             </select>
-        </p>
-    </div>
+        </span>
+    </strong>
+</footer>
 </template>
-<!--</baseLayout>-->
+
+<style>
+footer {
+  color: white;
+  background:rgb(56, 122, 243);
+  position: absolute;
+  bottom: 0;
+  padding: 30px;
+  width: 100%
+}
+</style>
 
 <script>
 export default {
