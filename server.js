@@ -9,34 +9,42 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+// Tell Vue to use the plugin
 const session = require('express-session')
-
 const app = express()
-
+var id = 1
 // ces lignes (cors) sont importantes pour les sessions dans la version de développement
-app.use(cors({
-  credentials: true,
-  origin: 'http://localhost:8080'
-}))
-app.use(session({
-  secret: 'blablabla', // changez cette valeur
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // ne changez que si vous avez activé le https
-}))
+app.use(
+  cors({
+    credentials: true,
+    origin: 'http://localhost:8080'
+  })
+)
+app.use(
+  session({
+    secret: 'blablabla', // changez cette valeur
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // ne changez que si vous avez activé le https
+  })
+)
 app.use(morgan('dev'))
 app.use(bodyParser.json())
 
 const path = require('path')
 app.use(express.static(path.join(__dirname, '/dist')))
 
-const users = [{
-  username: 'admin',
-  password: 'changethispassword'
-}]
+const users = [
+  {
+    username: 'admin',
+    password: 'changethispassword',
+    id: 1
+  }
+]
 
 var docks = [
   {
+    id: 1,
     title: 'User',
     active: false,
     input: {
@@ -53,6 +61,15 @@ var docks = [
   }
 ]
 
+app.post('/api/users', (req, res) => {
+  console.log('req.body', req.body)
+  console.log('req.query', req.query)
+  console.log('docks title', docks.title + users.length)
+  res.json({
+    users: users
+  })
+})
+
 app.post('/stock/getStocks', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
@@ -63,29 +80,37 @@ app.post('/stock/getStocks', (req, res) => {
 })
 
 app.post('/stock/updateStocks', (req, res) => {
-  if (req.body.docks !== undefined) {
-    docks = req.body.docks
-  }
+  res.json({
+    message: 'update user dock'
+  })
 })
 
 app.post('/api/login', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
-  var usr = { username: req.body.login, password: req.body.password }
-  const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+  var usr = { username: req.body.username, password: req.body.password }
+  var user = users.find(
+    u => u.username === req.body.username && u.password === req.body.password
+  )
+  console.log(JSON.stringify(user))
   if (!user) {
+    usr.id = ++id
     users.push(usr)
+    user = usr
     res.json({
-      message: 'creation'
+      message: 'creation',
+      user: user
     })
   } else {
     // connect the user
     req.session.userId = 1000 // connect the user, and change the id
     res.json({
-      message: 'connected'
+      message: 'connected',
+      user: user
     })
   }
 })
+
 const port = process.env.PORT || 4000
 app.listen(port, () => {
   console.log(`listening on ${port}`)
@@ -117,4 +142,3 @@ app.listen(port, () => {
 //     }
 //   ])
 // })
-
