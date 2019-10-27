@@ -1,14 +1,12 @@
 <template>
 <footer style="display:flex">
-    <span>Mis en ligne le 07/10/2019</span>
-    <a v-for="tag in tags" :href="tag.lien" style="color:white; text-decoration: none">
-        {{ tag.libelle }}
+    <span style="font-weight:normal;">{{ textes[no_langue][0] }} 07/11/2019</span>
+    <a v-for="(url, index) in liens" :href="url" style="color:white; text-decoration: none">
+        {{ textes[no_langue][index] }}
     </a>
-    <span>Langue sélectionnée:
-        <select v-model="langues" style="color: black; font-weight: normal; background:white; appearance: menulist">
-            <option disabled value=''>Choisir</option>
-            <option>Français</option>
-            <option>Anglais</option>
+    <span style="font-weight:normal;">{{ textes[no_langue][5] }}
+        <select v-model="langage" @change="changer_langage" style="color: black; background:white; appearance: menulist">
+            <option v-for="langue in langues" :value="langue">{{ langue }}</option>
         </select>
     </span>
 </footer>
@@ -31,13 +29,45 @@ footer {
 export default {
   data: function () {
     return {
-      tags: [
-        { lien: 'https://www.google.fr', libelle: 'Qui sommes nous?' },
-        { lien: 'https://www.google.fr', libelle: 'Mentions légales' },
-        { lien: 'https://www.google.fr', libelle: 'Contact' }
+      langage: '',
+      langues: [
+        'Français',
+        'English'
       ],
-      langues: ''
+      no_langue: 0,
+      textes: [
+        [
+          'Mis en ligne le',
+          'A propos',
+          'Qui sommes nous?',
+          'Mentions légales',
+          'Nous contacter',
+          'Langue sélectionnée:'
+        ],
+        [
+          'Set online the',
+          'About',
+          'Who are we?',
+          'Legal notice',
+          'Contact us',
+          'Selected language:'
+        ]
+      ],
+      liens: [
+        'https://www.google.fr',
+        'https://www.google.fr',
+        'https://www.google.fr',
+        'https://www.google.fr'
+      ]
     }
+  },
+  methods: {
+    changer_langage: function () {
+      this.no_langue = this.langues.indexOf(this.langage);
+    }
+  },
+  created: function () {
+    this.langage = this.langues[0];
   }
 }
 </script>
