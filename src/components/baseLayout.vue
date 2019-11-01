@@ -1,12 +1,12 @@
 <template>
 <footer style="display:flex">
     <span style="font-weight:normal;">{{ textes[no_langue][0] }} 07/11/2019</span>
-    <a v-for="(url, index) in liens" :href="url" style="color:white; text-decoration: none">
-        {{ textes[no_langue][index] }}
+    <a v-for="(url, index) in liens" :key="url" :href="url" style="color:white; text-decoration: none">
+        {{ textes[no_langue][index + 1] }}
     </a>
     <span style="font-weight:normal;">{{ textes[no_langue][5] }}
         <select v-model="langage" @change="changer_langage" style="color: black; background:white; appearance: menulist">
-            <option v-for="langue in langues" :value="langue">{{ langue }}</option>
+            <option v-for="langue in langues" :value="langue" :key="langue">{{ langue }}</option>
         </select>
     </span>
 </footer>
@@ -63,11 +63,11 @@ export default {
   },
   methods: {
     changer_langage: function () {
-      this.no_langue = this.langues.indexOf(this.langage);
+      this.no_langue = this.langues.indexOf(this.langage)
     }
   },
   created: function () {
-    this.langage = this.langues[0];
+    this.langage = this.langues[0]
   }
 }
 </script>

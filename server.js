@@ -53,12 +53,15 @@ var docks = [
       placeholder: ''
     },
     decks: [
-      { title: 'Capitals', count: 5 },
-      { title: 'History', count: 3 },
-      { title: 'Bash', count: 129 }
-    ],
-    count: 3
-  }
+      { title: 'Capitals',
+        flashcards: [
+          { key: 'France', value: 'Paris' },
+          { key: 'Etats-Unis', value: 'Washington' },
+          { key: 'Inde', value: 'New Delhi' }
+        ] },
+      { title: 'History', flashcards: [] },
+      { title: 'Bash', flashcards: [] }
+    ] }
 ]
 
 app.post('/api/users', (req, res) => {
