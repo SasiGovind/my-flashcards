@@ -63,7 +63,7 @@
                   v-for="dock in docks"
                   :key="dock.title"
                   v-model="dock.active"
-                  @click="selectItem ('dock', dock.title)"
+                  @click="selectItem('dock', dock.title)"
                 >
                   <template v-slot:activator>
                     <v-list-item-title class="font-weight-light headline">{{ dock.title }}</v-list-item-title>
@@ -178,7 +178,7 @@
             <!-- dialog for flashcards -->
             <v-dialog v-model="card_dialog.show" persistent max-width="600px">
               <template v-slot:activator="{ on }">
-                <v-btn @click="add_card()" v-on="on" class="ma-2" rounded outlined color="success">
+                <v-btn @click="show_dialog('Add Card', card_dialog)" v-on="on" class="ma-2" rounded outlined color="success">
                   Add Flashcard {{ (selectedItem.deck != '')?'to '+selectedItem.deck:'' }}
                   <v-icon right>mdi-plus</v-icon>
                 </v-btn>
@@ -221,11 +221,11 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <small>*indicates required field</small>
+                  <small v-if="card_dialog.title!=='Card'" >*indicates required field</small>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close_card()">Close</v-btn>
+                  <v-btn color="blue darken-1" text @click="close_card('Card', card_dialog, true)">Close</v-btn>
                   <v-btn
                     v-if="card_dialog.title !== 'Card'"
                     color="blue darken-1"
@@ -275,6 +275,40 @@
           <div class="b-bottom">
             <span class="under-line text-uppercase font-weight-regular title">Temple</span>
           </div>
+          <v-dialog v-model="play_dialog.show" persistent max-width="600px" @keydown.esc="close_card('Revise', play_dialog, false, true)" @keydown.left="shift_card(play_dialog, 'prev')" @keydown.right="shift_card(play_dialog, 'next')">
+              <template v-slot:activator="{ on }">
+                <v-btn @click="show_play_cards(play_dialog)"  v-on="on" color="success" class="ma-2" rounded dark>Play {{ (selectedItem.deck != '')?selectedItem.deck:'' }} Cards</v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="headline mx-auto">{{ play_dialog.title }}</span>
+                  <v-icon style="position:absolute; right:3%;"  @click="close_card('Revise', play_dialog, false, true)">mdi-close</v-icon>
+                </v-card-title>
+                <v-card-text>
+                  <div class="play_card_box">
+                    <div class="key">Key</div>
+                    <div class="key_value"><p class="mb-2">{{ play_dialog.key }}</p></div>
+                  </div>
+                  <div style="height:30px"></div>
+                  <div class="play_card_box">
+                    <div class="key">Value</div>
+                    <div class="key_value"><p class="mb-2">{{ play_dialog.value }}</p></div>
+                  </div>
+                  <!-- <small>*indicates required field</small> -->
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'prev')">Prev</v-btn>
+                  <v-spacer></v-spacer>
+                  <p v-if="play_dialog.currentDeck !== undefined" > {{ (play_dialog.currentCount+1)+'/'+play_dialog.currentDeck.length }} </p>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="shift_card(play_dialog, 'next')"
+                  >Next</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
         </v-flex>
       </v-layout>
     </v-container>
@@ -309,6 +343,30 @@
 .under-line {
   text-decoration: underline;
 }
+
+.play_card_box {
+background-color: rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    width: 95%;
+    margin: auto;
+    transition-property: background-color;
+    transition-duration: 1s;
+}
+
+.play_card_box:hover {
+  background-color: rgba(0, 0, 0, 0.16);
+}
+
+.play_card_box div {
+  text-align: center;
+  padding: 2px;
+}
+
+.play_card_box div.key_value {
+  font-size: 20px;
+  /* font-weight: 500 */
+}
+
 </style>
 
 <script>
@@ -343,6 +401,14 @@ export default {
         key: '',
         value: ''
       }
+    },
+    play_dialog: {
+      show: false,
+      title: 'Revise',
+      key: '',
+      value: '',
+      currentDeck: '',
+      currentCount: 0
     }
   }),
   methods: {
@@ -442,24 +508,25 @@ export default {
       placeToSearch.splice(placeToSearch.indexOf(itemToDelete), 1)
       this.updateStocks()
     },
-    add_card () {
-      this.card_dialog.title = 'Add Card'
-      this.card_dialog.key = ''
-      this.card_dialog.value = ''
-      this.card_dialog.show = true
+    show_dialog (title, dialog, resetInput = true) {
+      dialog.title = title
+      if (resetInput) {
+        dialog.key = ''
+        dialog.value = ''
+      }
+      dialog.show = true
     },
     selectItem (place, title) {
       if (place === 'dock') {
         this.selectedItem.dock = title
         this.selectedItem.deck = ''
-        // this.docks.forEach(element => {
-        //   if (element.title !== title) {
-        //     element.active = undefined
-        //   }
-        // })
+        this.currentDeckComputed = ''
+        // this.play_dialog.currentDeck = ''
         // console.log('dock', this.selectedItem.dock)
       } else {
         this.selectedItem.deck = title
+        this.currentDeckComputed = this.currentFlashcards
+        // this.play_dialog.currentDeck = this.currentFlashcards
         // console.log('deck', this.selectedItem.deck)
       }
     },
@@ -476,7 +543,7 @@ export default {
         })
         this.updateStocks()
       }
-      this.close_card()
+      this.close_card('Card', this.card_dialog, true)
     },
     dcard_update_start (inKey, inValue) {
       this.card_dialog.title = 'Modify Card'
@@ -506,7 +573,7 @@ export default {
           }
         }
       }
-      this.close_card()
+      this.close_card('Card', this.card_dialog, true)
     },
     dcard_delete (inKey, inValue) {
       if (this.currentFlashcardsCount > 0) {
@@ -526,13 +593,41 @@ export default {
         }
       }
     },
-    close_card () {
-      this.card_dialog.title = 'Card'
-      this.card_dialog.key = ''
-      this.card_dialog.value = ''
-      this.card_dialog.old_card.key = ''
-      this.card_dialog.old_card.value = ''
-      this.card_dialog.show = false
+    close_card (defaultTitle, dialog, clearOldValue = false, resetCount = false) {
+      dialog.title = defaultTitle
+      dialog.key = ''
+      dialog.value = ''
+      if (clearOldValue) {
+        dialog.old_card.key = ''
+        dialog.old_card.value = ''
+      }
+      if (resetCount) dialog.currentCount = 0
+      dialog.show = false
+    },
+    shift_card (dialog, direction) {
+      var shift = (direction === 'next') ? 1 : -1
+      var i = dialog.currentCount + shift
+      if (dialog.currentDeck !== undefined && i < dialog.currentDeck.length && i >= 0) {
+        var card = dialog.currentDeck[i]
+        // console.log('card', card)
+        // console.log('before set', dialog)
+        // console.log('card value', card.key + ' + ' + card.value)
+        dialog.key = card.key
+        dialog.value = card.value
+        dialog.currentCount += shift
+        // console.log('playcard value', dialog.key + ' + ' + dialog.value)
+        // console.log('after set', dialog)
+      }
+    },
+    show_play_cards (dialog) {
+      // this.shift_card(dialog)
+      var first = dialog.currentCount // 0
+      if (dialog.currentDeck !== undefined && first < dialog.currentDeck.length) {
+        var card = dialog.currentDeck[first]
+        dialog.key = card.key
+        dialog.value = card.value
+      }
+      this.show_dialog('Revise', dialog, false)
     }
   },
   computed: {
@@ -546,6 +641,27 @@ export default {
         if (cardsCount !== undefined && cardsCount >= 0) return cardsCount
         else return -1
       } else return -1
+    },
+    currentFlashcards: function () {
+      if (this.selectedItem.dock !== '' && this.selectedItem.deck !== '') {
+        var cards = this.dfind(
+          'deck',
+          this.selectedItem.dock,
+          this.selectedItem.deck
+        ).flashcards
+        if (cards !== undefined && cards.length > 0) return cards
+        else return undefined
+      } else return undefined
+    },
+    currentDeckComputed: {
+      get: function () {
+        return this.play_dialog.currentDeck
+      },
+      set: function (newDeck) {
+        this.play_dialog.currentDeck = newDeck
+        this.play_dialog.currentCount = 0
+        // console.log('dialog setter', this.play_dialog)
+      }
     }
   },
   created () {
