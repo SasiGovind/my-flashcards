@@ -1,10 +1,11 @@
 <template>
 <footer style="display:flex">
-    <span style="font-weight:normal;">{{ textes[no_langue][0] }} 07/11/2019</span>
+    <span>{{ textes[no_langue][0] }} 07/11/2019</span>
     <a v-for="(url, index) in liens" :key="url" :href="url" style="color:white; text-decoration: none">
         {{ textes[no_langue][index + 1] }}
     </a>
-    <span style="font-weight:normal;">{{ textes[no_langue][5] }}
+    <Notice v-bind:no_langue="no_langue"/>
+    <span>{{ textes[no_langue][4] }}
         <select v-model="langage" @change="changer_langage" style="color: black; background:white; appearance: menulist">
             <option v-for="langue in langues" :value="langue" :key="langue">{{ langue }}</option>
         </select>
@@ -23,10 +24,17 @@ footer {
   font-weight:bold;
   justify-content: space-around;
 }
+
+span {
+  font-weight:normal;
+}
 </style>
 
 <script>
+import Notice from './Notice'
+
 export default {
+  components: { Notice },
   data: function () {
     return {
       langage: '',
@@ -40,7 +48,6 @@ export default {
           'Mis en ligne le',
           'A propos',
           'Qui sommes nous?',
-          'Mentions légales',
           'Nous contacter',
           'Langue sélectionnée:'
         ],
@@ -48,13 +55,11 @@ export default {
           'Set online the',
           'About',
           'Who are we?',
-          'Legal notice',
           'Contact us',
           'Selected language:'
         ]
       ],
       liens: [
-        'https://www.google.fr',
         'https://www.google.fr',
         'https://www.google.fr',
         'https://www.google.fr'
