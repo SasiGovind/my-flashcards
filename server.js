@@ -59,9 +59,28 @@ var docks = [
           { key: 'Etats-Unis', value: 'Washington' },
           { key: 'Inde', value: 'New Delhi' }
         ] },
-      { title: 'History', flashcards: [] },
+      { title: 'id: 1,History', flashcards: [] },
       { title: 'Bash', flashcards: [] }
     ] }
+  // {
+  //   id: 1,
+  //   title: 'Usdder',
+  //   active: false,
+  //   input: {
+  //     mode: 'adddd',
+  //     oldTitle: '',
+  //     placeholder: ''
+  //   },
+  //   decks: [
+  //     { title: 'Capdditals',
+  //       flashcards: [
+  //         { key: 'Frandce', value: 'Paris' },
+  //         { key: 'Etadts-Unis', value: 'Washington' },
+  //         { key: 'Indde', value: 'New Delhi' }
+  //       ] },
+  //     { title: 'Histdory', flashcards: [] },
+  //     { title: 'dBash', flashcards: [] }
+  //   ] }
 ]
 
 app.post('/api/users', (req, res) => {

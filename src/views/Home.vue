@@ -377,6 +377,8 @@ export default {
 
   name: 'home',
   data: () => ({
+    value: true,
+    currentUser: null,
     server_url: 'http://localhost:4000',
     selectedItem: {
       dock: '',
@@ -387,6 +389,7 @@ export default {
       oldTitle: '',
       placeholder: ''
     },
+    lsKey: 'currentUser',
     docks: [],
     rules: {
       required: value => !!value || 'Required.',
@@ -413,17 +416,21 @@ export default {
   }),
   methods: {
     getConnectedUser () {
-      const lsKey = 'currentUser'
-      const user = sessionStorage.getItem(lsKey)
+      const user = sessionStorage.getItem(this.lsKey)
       return user ? JSON.parse(user) : null
     },
     // async getName() {}
     async getStocks () {
       this.currentUser = this.getConnectedUser() // Penser à controler si current user nul
       const response = await this.axios.post(this.server_url + '/stock/getStocks')
-      // this.currentUser ? this.docks.push(response.data.docks.find(u => u.id === this.currentUser.id)) : this.docks = []
-      console.log(response.data.docks)
-      this.docks = response.data.docks
+      // this.docks = response.data.docks
+      // this.currentUser ? this.docks.push(response.data.docks.find(u => u.id === this.currentUser.id)) : this.docks = [])
+      var dock = response.data.docks.filter(u => u.id === this.currentUser.id)
+      if (Array.isArray(dock)) {
+        this.docks = dock
+      } else {
+        this.docks.push(dock)
+      }
     },
     updateStocks () {
       this.axios.post(this.server_url + '/stock/updateStocks', {
@@ -457,6 +464,7 @@ export default {
       }
       if (place === 'dock') {
         pack.push({
+          id: this.currentUser.id,
           title: input.placeholder,
           input: {
             mode: 'add',
@@ -665,6 +673,10 @@ export default {
     }
   },
   created () {
+    if (sessionStorage.getItem('currentUser') === null) {
+      alert('Veuillez vous connecter svp !')
+      this.$router.push('/login')
+    }
     this.getStocks()
     // this.docks.forEach(element => {
     //   element.active = false
