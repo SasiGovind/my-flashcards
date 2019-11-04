@@ -1,6 +1,7 @@
 <template >
-  <v-form ref="form" v-model="valid" lazy-validation>
-    <v-col cols="12" sm="6">
+  <v-form class="form" ref="form" v-model="valid" lazy-validation>
+    <h1> Page de connexion </h1>
+    <v-col cols="10" sm="6">
     <v-text-field v-model="name" ref="id" :counter="12" :rules="idRules" label="Identifiant" required></v-text-field>
     <v-text-field v-model="password" :append-icon="show ? 'mdi-plus' : 'mdi-visibility_off'"
             :rules="[rulesPWD.required, rulesPWD.min]" :type="show ? 'text' : 'password'"
@@ -8,12 +9,8 @@
             @click:append="show = !show" ref="mdp" label="Mot de passe" required>
     </v-text-field>
     </v-col>
-
     <v-btn :disabled="!valid" color="success" class="mr-4" @click="login()">valider</v-btn>
-
     <v-btn color="error" class="mr-4" @click="reset">Reset</v-btn>
-
-    <v-btn color="warning" @click="resetValidation">Reset Validation</v-btn>
   </v-form>
 </template>
 <script>
@@ -22,7 +19,6 @@ export default {
     valid: true,
     name: '',
     password: '',
-    currentUser: null,
     id: '',
     url: 'http://localhost:4000',
     idRules: [
@@ -59,7 +55,6 @@ export default {
         sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
       }
     },
-    logout () {},
     reset () {
       this.$refs.form.reset()
     },
@@ -70,4 +65,24 @@ export default {
 }
 </script>
 <style>
+.form {
+  position: absolute;
+  padding-left: 12%;
+  padding-top: 3%;
+  top: 15%;
+  right:30%;
+  bottom: 40%;
+  left: 30%;
+  background-color: rgba(0, 66, 189, 0.178);
+  opacity: 1;
+  box-shadow: 0px 0px 5px black;
+  border-radius: 3px;
+  border: 1px solid black;
+}
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  text-shadow: 0px 0px 3px white;
+}
+
 </style>
