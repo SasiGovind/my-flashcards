@@ -13,6 +13,7 @@ const cors = require('cors')
 const session = require('express-session')
 const app = express()
 var id = 1
+const urlAvatar = 'http://icons.iconarchive.com/icons/papirus-team/papirus-status/256/avatar-default-icon.png'
 // ces lignes (cors) sont importantes pour les sessions dans la version de développement
 app.use(
   cors({
@@ -36,9 +37,10 @@ app.use(express.static(path.join(__dirname, '/dist')))
 
 const users = [
   {
+    id: 1,
     username: 'admin',
     password: 'changethispassword',
-    id: 1
+    imageAvatar: urlAvatar
   }
 ]
 
@@ -59,7 +61,7 @@ var docks = [
           { key: 'Etats-Unis', value: 'Washington' },
           { key: 'Inde', value: 'New Delhi' }
         ] },
-      { title: 'id: 1,History', flashcards: [] },
+      { title: 'History', flashcards: [] },
       { title: 'Bash', flashcards: [] }
     ] }
   // {
@@ -86,12 +88,21 @@ var docks = [
 app.post('/api/users', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
-  console.log('docks title', docks.title + users.length)
   res.json({
     users: users
   })
 })
 
+app.post('/api/updateUser', (req, res) => {
+  console.log('req.body', req.body)
+  console.log('req.query', req.query)
+  users.find(
+    u => u.username === req.body.username && u.password === req.body.password
+  ).imageAvatar = req.body.imageAvatar
+  res.json({
+    users: users
+  })
+})
 app.post('/stock/getStocks', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
@@ -101,9 +112,11 @@ app.post('/stock/getStocks', (req, res) => {
   })
 })
 
-app.post('/stock/updateStocks', (req, res) => {
+app.post('/stock/updateStocks', (req, res) => { // Ne marche pas
+  docks = req.body
   res.json({
-    message: 'update user dock'
+    message: 'update user dock',
+    docks: docks
   })
 })
 
@@ -112,23 +125,26 @@ app.post('/api/login', (req, res) => {
   console.log('req.query', req.query)
   var usr = { username: req.body.username, password: req.body.password }
   var user = users.find(
-    u => u.username === req.body.username && u.password === req.body.password
-  )
+    u => u.username === req.body.username)
   console.log(JSON.stringify(user))
   if (!user) {
     usr.id = ++id
+    usr.imageAvatar = urlAvatar
     users.push(usr)
     user = usr
     res.json({
       message: 'creation',
       user: user
     })
-  } else {
+  } else if (usr.password === user.password) {
     // connect the user
-    req.session.userId = 1000 // connect the user, and change the id
     res.json({
       message: 'connected',
       user: user
+    })
+  } else {
+    res.json({
+      message: 'error'
     })
   }
 })

@@ -1,5 +1,15 @@
 <template >
+<div>
+   <v-alert
+      v-model="alert"
+      type="warning"
+      close-text="Close Alert"
+      dismissible
+    >
+   {{message}}
+    </v-alert>
   <v-form class="form" ref="form" v-model="valid" lazy-validation>
+
     <h1> Page de connexion </h1>
     <v-col cols="10" sm="6">
     <v-text-field v-model="name" ref="id" :counter="12" :rules="idRules" label="Identifiant" required></v-text-field>
@@ -12,14 +22,16 @@
     <v-btn :disabled="!valid" color="success" class="mr-4" @click="login()">valider</v-btn>
     <v-btn color="error" class="mr-4" @click="reset">Reset</v-btn>
   </v-form>
+</div>
 </template>
 <script>
 export default {
   data: () => ({
+    alert: false,
+    message: 'Mot de passe inccorect',
     valid: true,
     name: '',
     password: '',
-    id: '',
     url: 'http://localhost:4000',
     idRules: [
       v => !!v || 'Identifiant requis',
@@ -39,20 +51,15 @@ export default {
       var currentUser = {
         username: this.name,
         password: this.password,
-        id: ''
+        id: '',
+        imageAvatar: ''
       }
-      // connecter l'utilisateur à optimiser parce que là c'est vraiment dégueu
       const response = await this.axios.post(this.url + '/api/login', currentUser)
-      alert('Le message est ' + response.data.message)
-      if (response.data.message === 'creation') {
-        alert('Compte créé ! Vous avez été connecté à votre compte ' + this.name + ' !')
+      if (response.data.message === 'error') {
+        this.alert = true
+      } else {
         sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
         this.$router.push('/')
-      }
-      if (response.data.message === 'connected') {
-        this.$router.push('/')
-        alert('Vous avez été connecté à votre compte ' + this.name + ' !')
-        sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
       }
     },
     reset () {
@@ -73,10 +80,11 @@ export default {
   right:30%;
   bottom: 40%;
   left: 30%;
-  background-color: rgba(0, 66, 189, 0.178);
+  background-image: url("https://w.wallhaven.cc/full/13/wallhaven-13389g.png");
+  background-position: right;
   opacity: 1;
   box-shadow: 0px 0px 5px black;
-  border-radius: 3px;
+  border-radius: 30px 0px 30px;
   border: 1px solid black;
 }
 h1 {

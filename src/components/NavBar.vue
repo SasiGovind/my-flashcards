@@ -1,7 +1,7 @@
 <template>
   <nav>
     <v-app-bar class="nav" app extended extensionHeight>
-      <v-btn icon @click.stop="drawer = !drawer" @click="getUser">
+      <v-btn icon v-bind:disabled="isConnected()" :key='toReload' @click.stop="drawer = !drawer" @click="getUser">
         <v-icon>fas fa-list</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
@@ -12,10 +12,11 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-navigation-drawer color="#387AF3"  overlay-opacity=0.6 v-model="drawer" absolute temporary>
+    <v-navigation-drawer id:="drawer" overlay-opacity=0.6 v-model="drawer" absolute temporary>
+       <v-img src="https://w.wallhaven.cc/full/13/wallhaven-13389g.png" height="100%">
       <v-list-item>
         <v-list-item-content class="image">
-          <v-img src="https://d2w9rnfcy7mm78.cloudfront.net/1616404/large_ce645ebfe2895f7717f066ab3f8dc496.png?1516357045?bc=1"></v-img>
+        <v-img v-if="this.getConnectedUser() != null" v-bind:src="this.getConnectedUser().imageAvatar"></v-img>
           <v-list-item-title>{{id}}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -32,14 +33,6 @@
             <a v-bind:href="item.link" > <v-list-item-title >{{ item.title }}</v-list-item-title>  </a>
           </v-list-item-content>
         </v-list-item>
-          <v-list-item>
-             <v-list-item-icon>
-          <v-icon> fas fa-lock </v-icon>
-           </v-list-item-icon>
-                <v-list-item-content>
-           <a href="#/login" ><v-list-item-title @click="logout">Logout</v-list-item-title> </a>
-               </v-list-item-content>
-        </v-list-item>
         <v-list-group
         prepend-icon="account_circle"
         value="true"
@@ -54,8 +47,13 @@
             <v-list-item-title>{{ user.username }}</v-list-item-title>
           </v-list-item-content>
             </v-list-item>
+
         </v-list-group>
+        <div class="pa-2">
+          <v-btn dark style="position: absolute; bottom : 10px; width: 95%"  @click="logout" >Déconnexion</v-btn>
+        </div>
       </v-list>
+      </v-img>
     </v-navigation-drawer>
   </nav>
 </template>
@@ -63,13 +61,15 @@
 <script>
 export default {
   data: () => ({
+    toReload: 0,
+    currentUser: null,
     lsKey: 'currentUser',
     drawer: null,
     id: '',
     users: [],
     url: 'http://localhost:4000',
     items: [
-      { title: 'Home', icon: 'dashboard', link: '/' },
+      { title: 'Accueil', icon: 'dashboard', link: '/' },
       { title: 'Paramètres', icon: 'question_answer', link: '#/settings' }
     ]
   }),
@@ -78,22 +78,29 @@ export default {
       const user = sessionStorage.getItem(this.lsKey)
       return user ? JSON.parse(user) : null
     },
+    forceRender () {
+      this.toReload += 1
+    },
+    isConnected () {
+      return sessionStorage.getItem(this.lsKey) === null
+    },
     async getUser () {
       console.log(this.getConnectedUser())
       const listusers = await this.axios.post(this.url + '/api/users')
-      const cUser = this.getConnectedUser()
+      this.currentUser = this.getConnectedUser()
       this.users = listusers.data.users
       const user = this.users.find(
-        u => u.username === cUser.username && u.password === cUser.password
+        u => u.username === this.currentUser.username && u.password === this.currentUser.password
       )
       user == null ? this.id = 'Erreur' : this.id = user.username
     },
     logout () {
+      this.$router.push('/login')
       sessionStorage.removeItem(this.lsKey)
     }
   },
-  created () {
-    this.id = 'Non connecté'
+  beforeRouteUpdate () {
+    this.forceRender() // ne marche pas, help Sasi
   }
 }
 

@@ -433,9 +433,8 @@ export default {
       }
     },
     updateStocks () {
-      this.axios.post(this.server_url + '/stock/updateStocks', {
-        docks: this.docks
-      })
+      this.axios.post(this.server_url + '/stock/updateStocks', this.docks
+      )
     },
     dfind (place, kdock, kdeck = -1) {
       if (kdock === '' && kdeck === '') return false
