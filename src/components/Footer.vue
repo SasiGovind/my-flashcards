@@ -1,11 +1,9 @@
 <template>
 <footer style="display:flex">
-    <span>{{ textes[no_langue][0] }} 07/11/2019</span>
-    <a v-for="(url, index) in liens" :key="url" :href="url" style="color:white; text-decoration: none">
-        {{ textes[no_langue][index + 1] }}
-    </a>
-    <Notice v-bind:no_langue="no_langue"/>
-    <span>{{ textes[no_langue][4] }}
+    <span>{{ textes[no_langue][0] }} 09/11/2019</span>
+    <Contact :no_langue="no_langue"/>
+    <Notice :no_langue="no_langue"/>
+    <span>{{ textes[no_langue][1] }}
         <select v-model="langage" @change="changer_langage" style="color: black; background:white; appearance: menulist">
             <option v-for="langue in langues" :value="langue" :key="langue">{{ langue }}</option>
         </select>
@@ -32,11 +30,13 @@ span {
 
 <script>
 import Notice from './Notice'
+import Contact from './Contact'
 
 export default {
-  components: { Notice },
+  components: { Notice, Contact },
   data: function () {
     return {
+      dock: '',
       langage: '',
       langues: [
         'Français',
@@ -46,28 +46,17 @@ export default {
       textes: [
         [
           'Mis en ligne le',
-          'A propos',
-          'Qui sommes nous?',
-          'Nous contacter',
           'Langue sélectionnée:'
         ],
         [
           'Set online the',
-          'About',
-          'Who are we?',
-          'Contact us',
           'Selected language:'
         ]
-      ],
-      liens: [
-        'https://www.google.fr',
-        'https://www.google.fr',
-        'https://www.google.fr'
       ]
     }
   },
   methods: {
-    changer_langage: function () {
+    changer_langage () {
       this.no_langue = this.langues.indexOf(this.langage)
     }
   },
