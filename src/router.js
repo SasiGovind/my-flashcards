@@ -19,11 +19,6 @@ export default new Router({
       component: Settings
     },
     {
-      path: '/',
-      name: 'mail',
-      component: Footer
-    },
-    {
       path: '/login',
       name: 'login',
       // route level code-splitting
