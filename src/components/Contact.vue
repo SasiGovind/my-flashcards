@@ -38,10 +38,10 @@ export default {
     return {
       dialog: false,
       message: {
-          nom: '',
-          prenom: '',
-          from: '',
-          text: ''
+        nom: '',
+        prenom: '',
+        from: '',
+        text: ''
       },
       textes: [
         [
@@ -68,15 +68,15 @@ export default {
     }
   },
   methods: {
-      async verif () {
-          if (this.message.text != '') {
-            if (confirm(this.textes[this.no_langue][7])) {
-                this.message.subject = 'Contact ' + this.message.nom + ' ' + this.message.prenom
-                const response = await this.axios.post('http://localhost:4000/api/mail', this.message)
-                console.log('reponse',response)
-            }
-          }
+    async verif () {
+      if (this.message.text !== '') {
+        if (confirm(this.textes[this.no_langue][7])) {
+          this.message.subject = 'Contact ' + this.message.nom + ' ' + this.message.prenom
+          const response = await this.axios.post('http://localhost:4000/api/mail', this.message)
+          console.log('reponse', response)
+        }
       }
+    }
   }
 }
 </script>
