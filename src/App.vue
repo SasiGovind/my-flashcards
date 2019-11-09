@@ -7,16 +7,16 @@
       <router-link to="/settings">Settings</router-link> -->
       <router-view/>
     </v-content>
-    <baseLayout/>
+    <Footer/>
   </v-app>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar'
-import baseLayout from '@/components/baseLayout'
+import Footer from '@/components/Footer'
 
 export default {
   name: 'App',
-  components: { NavBar, baseLayout }
+  components: { NavBar, Footer }
 }
 </script>
