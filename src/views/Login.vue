@@ -108,7 +108,7 @@ export default {
         } else if (response.data.message === 'already used') {
           this.index_alerte = 14
           this.alert = true
-        }else {
+        } else {
           sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
           this.$router.push('/')
           if (regist) {
