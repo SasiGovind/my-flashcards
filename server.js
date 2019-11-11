@@ -126,28 +126,38 @@ app.post('/stock/updateStocks', (req, res) => { // Ne marche pas
 
 app.post('/api/login', (req, res) => {
   console.log('req.body', req.body)
-  console.log('req.query', req.query)
   var usr = { username: req.body.username, password: req.body.password }
   var user = users.find(
     u => u.username === req.body.username)
     console.log(JSON.stringify(user))
-    console.log("ici", !user)
   if (!user) {
-    console.log("PAS RECONNU")
-    usr.id = ++id
-    usr.imageAvatar = urlAvatar
-    users.push(usr)
-    user = usr
-    res.json({
-      message: 'creation',
-      user: user
-    })
+    if (req.body.registration){
+      usr.id = ++id
+      usr.imageAvatar = urlAvatar
+      users.push(usr)
+      user = usr
+      res.json({
+        message: 'creation',
+        user: user
+      })
+    } else {
+      res.json({
+        message: 'error'
+      })
+    }
   } else if (usr.password === user.password) {
-    // connect the user
-    res.json({
-      message: 'connected',
-      user: user
-    })
+    if (!req.body.registration){
+      // connect the user
+      res.json({
+        message: 'connected',
+        user: user
+      })
+    } else {
+      res.json({
+        message: 'already used'
+      })
+    }
+    
   } else {
     res.json({
       message: 'error'
@@ -169,6 +179,12 @@ app.post('/api/mail', (req, res) => {
     res = "kkk"
     console.log("échec de l'envoi", res)
   }
+  /*var reponse = {
+    from: req.body.to,
+    to: req.body.from,
+    subject: 'My flashcards vous',
+    text: req.body.to
+  }*/
 })
 
 const port = process.env.PORT || 4000

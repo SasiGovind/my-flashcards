@@ -6,11 +6,11 @@
       close-text="Close Alert"
       dismissible
     >
-   {{textes[no_langue][5]}}
+   {{textes[no_langue][index_alerte]}}
     </v-alert>
   <v-form class="form" ref="form" v-model="valid" lazy-validation>
 
-    <h1> {{textes[no_langue][0]}} </h1>
+    <h1> {{textes[no_langue][index_titre]}} </h1>
     <v-col cols="10" sm="6">
     <v-text-field v-model="name" ref="id" :counter="12" :rules="idRules" :label=textes[no_langue][1] required></v-text-field>
     <v-text-field v-model="password" :append-icon="show ? 'mdi-plus' : 'mdi-visibility_off'"
@@ -18,9 +18,16 @@
              counter
             @click:append="show = !show" ref="mdp" :label=textes[no_langue][2] required>
     </v-text-field>
+    <v-text-field v-if="registration" v-model="mail" ref="mail" :rules="rulesMail" :label=textes[no_langue][12] required/>
     </v-col>
-    <v-btn :disabled="!valid" color="success" class="mr-4" @click="login()">{{textes[no_langue][3]}}</v-btn>
-    <v-btn color="error" class="mr-4" @click="reset">{{textes[no_langue][4]}}</v-btn>
+    <div v-if="!registration">
+      <v-btn :disabled="!valid" color="success" class="mr-4" @click="login(false)">{{textes[no_langue][3]}}</v-btn>
+      <v-btn color="error" class="mr-4" @click="register">{{textes[no_langue][4]}}</v-btn>
+    </div>
+    <div v-else>
+      <v-btn :disabled="!valid" color="success" class="mr-4" @click="login(true)">{{textes[no_langue][4]}}</v-btn>
+      <v-btn color="error" class="mr-4" @click="registration = false">{{textes[no_langue][11]}}</v-btn>
+    </div>
   </v-form>
 </div>
 </template>
@@ -30,8 +37,10 @@ export default {
   data: () => ({
     alert: false,
     valid: true,
+    registration: false, // pour plus de visibilite
     name: '',
     password: '',
+    mail: '',
     url: 'http://localhost:4000',
     idRules: [0, 0],
     show: false,
@@ -39,46 +48,63 @@ export default {
       required: 0,
       min: 0
     },
+    rulesMail: [0],
+    index_titre: 0,
+    index_alerte: 0,
     textes: [
       [
         'Page de connexion',
         'Identifiant',
         'Mot de passe',
-        'Valider',
-        'Reset',
-        'Mot de passe incorrect',
-        'Identifiant requis',
+        'Se connecter',
+        "S'inscrire",
+        'Mot de passe incorrect.',
+        'Identifiant requis.',
         "L'Identifiant doit faire au plus 12 caractères",
         'Mot de passe requis.',
-        'Min 8 caractères'
+        'Min 8 caractères',
+        'Créer votre compte',
+        'Retour',
+        'Adresse mail',
+        'Adresse mail requise.',
+        'Ce compte existe déjà.'
       ],
       [
         'Login page',
         'Login',
         'Password',
-        'Validate',
-        'Reset',
-        'Invalid password',
-        'ID required',
+        'Connect',
+        'Register',
+        'Invalid password.',
+        'ID required.',
         'The identifier must be at most 12 characters',
-        'Password required',
-        'Min 8 characters'
+        'Password required.',
+        'Min 8 characters',
+        'Create your account',
+        'Return',
+        'Mail address',
+        'Mail address required.',
+        'This account already exists.'
       ]
     ]
   }),
   methods: {
-    async login () {
+    async login (regist) {
       if (this.$refs.form.validate()) {
         const lsKey = 'currentUser'
         var currentUser = {
           username: this.name,
           password: this.password,
           id: '',
-          imageAvatar: ''
+          imageAvatar: '',
+          registration: regist
         }
         const response = await this.axios.post(this.url + '/api/login', currentUser)
         if (response.data.message === 'error') {
-          console.log('erreur') // lorsque l'on arrive sur la page, on ne doit pas pouvoir valider alors que rien n'est saisi
+          this.index_alerte = 5
+          this.alert = true
+        } else if (response.data.message === 'already used') {
+          this.index_alerte = 14
           this.alert = true
         } else {
           console.log('pas d erreur')
@@ -87,22 +113,28 @@ export default {
         }
       }
     },
-    reset () {
-      this.$refs.form.reset()
-    },
-    resetValidation () {
-      this.$refs.form.resetValidation()
+    register () {
+      this.registration = true
     },
     set_rules () {
       this.idRules[0] = v => !!v || this.textes[this.no_langue][6]
       this.idRules[1] = v => (v && v.length <= 12) || this.textes[this.no_langue][7]
       this.rulesPWD.required = value => !!value || this.textes[this.no_langue][8]
       this.rulesPWD.min = v => (v && v.length >= 8) || this.textes[this.no_langue][9]
+      this.rulesMail[0] = val => !!val || this.textes[this.no_langue][13]
     }
   },
   watch: {
     no_langue: function () {
       this.set_rules()
+    },
+    registration: function (newVal) {
+      this.$refs.form.reset()
+      if (newVal) {
+        this.index_titre = 10
+      } else {
+        this.index_titre = 0
+      }
     }
   },
   created: function () {
@@ -113,7 +145,7 @@ export default {
 <style>
 .form {
   position: absolute;
-  padding-left: 12%;
+  padding-left: 11%;
   padding-top: 3%;
   top: 15%;
   right:30%;
