@@ -6,7 +6,7 @@
       close-text="Close Alert"
       dismissible
     >
-   {{message}}
+   {{textes[no_langue][5]}}
     </v-alert>
   <v-form class="form" ref="form" v-model="valid" lazy-validation>
 
@@ -29,21 +29,15 @@ export default {
   props: ['no_langue'],
   data: () => ({
     alert: false,
-    message: 'Mot de passe incorrect',
     valid: true,
     name: '',
     password: '',
     url: 'http://localhost:4000',
-    idRules: [
-      v => !!v || 'Identifiant requis',
-      v =>
-        (v && v.length <= 12) ||
-        "L'Identifant doit faire au plus 12 caracteres"
-    ],
+    idRules: [0, 0],
     show: false,
     rulesPWD: {
-      required: value => !!value || 'Mot de passe requis.',
-      min: v => v.length >= 8 || 'Min 8 characters'
+      required: 0,
+      min: 0
     },
     textes: [
       [
@@ -51,14 +45,24 @@ export default {
         'Identifiant',
         'Mot de passe',
         'Valider',
-        'Reset'
+        'Reset',
+        'Mot de passe incorrect',
+        'Identifiant requis',
+        "L'Identifiant doit faire au plus 12 caractères",
+        'Mot de passe requis.',
+        'Min 8 caractères'
       ],
       [
         'Login page',
         'Login',
         'Password',
         'Validate',
-        'Reset'
+        'Reset',
+        'Invalid password',
+        'ID required',
+        'The identifier must be at most 12 characters',
+        'Password required',
+        'Min 8 characters'
       ]
     ]
   }),
@@ -86,7 +90,21 @@ export default {
     },
     resetValidation () {
       this.$refs.form.resetValidation()
+    },
+    set_rules () {
+      this.idRules[0] = v => !!v || this.textes[this.no_langue][6]
+      this.idRules[1] = v => (v && v.length <= 12) || this.textes[this.no_langue][7]
+      this.rulesPWD.required = value => !!value || this.textes[this.no_langue][8]
+      this.rulesPWD.min = v => (v && v.length >= 8) || this.textes[this.no_langue][9]
     }
+  },
+  watch: {
+    no_langue: function () {
+      this.set_rules()
+    }
+  },
+  created: function () {
+    this.set_rules()
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <nav>
     <v-app-bar class="nav" app extended extensionHeight>
-      <v-btn icon v-bind:disabled="isConnected()" :key='toReload' @click.stop="drawer = !drawer" @click="getUser">
+      <v-btn icon v-bind:disabled="!connecte" :key='toReload' @click.stop="drawer = !drawer" @click="getUser">
         <v-icon>fas fa-list</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
@@ -60,11 +60,10 @@
 
 <script>
 export default {
-  props: ['no_langue'],
+  props: ['no_langue', 'connecte', 'lsKey'],
   data: () => ({
     toReload: 0,
     currentUser: null,
-    lsKey: 'currentUser',
     drawer: null,
     id: '',
     users: [],
@@ -96,9 +95,6 @@ export default {
     forceRender () {
       this.toReload += 1
     },
-    isConnected () {
-      return sessionStorage.getItem(this.lsKey) === null
-    },
     async getUser () {
       console.log(this.getConnectedUser())
       const listusers = await this.axios.post(this.url + '/api/users')
@@ -112,6 +108,7 @@ export default {
     logout () {
       this.$router.push('/login')
       sessionStorage.removeItem(this.lsKey)
+      this.connecte = (sessionStorage.getItem(this.lsKey) === null)
     },
     update_titles () {
       for (let i = 0; i < this.items.length; i++) {

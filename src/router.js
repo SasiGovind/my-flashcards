@@ -20,7 +20,6 @@ export default new Router({
       props: true
     },
     {
-      props: ['no_langue'],
       path: '/login',
       name: 'login',
       // route level code-splitting

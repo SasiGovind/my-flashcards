@@ -107,7 +107,7 @@
                     v-model="dock.input.placeholder"
                     :rules="[rules.min]"
                     @keyup.enter="update('deck',dock.title)"
-                    label="Modifie ton deck !"
+                    :label=textes[no_langue][2]
                     outlined
                     dense
                     clearable
@@ -178,8 +178,8 @@
             <!-- dialog for flashcards -->
             <v-dialog v-model="card_dialog.show" persistent max-width="600px">
               <template v-slot:activator="{ on }">
-                <v-btn @click="show_dialog('Add Card', card_dialog)" v-on="on" class="ma-2" rounded outlined color="success">
-                  {{textes[no_langue][1]}} Flashcard {{ (selectedItem.deck != '')?'to '+selectedItem.deck:'' }}
+                <v-btn @click="show_dialog(textes[no_langue][1] + ' Card', card_dialog)" v-on="on" class="ma-2" rounded outlined color="success">
+                  {{textes[no_langue][1]}} Flashcard {{ (selectedItem.deck != '')?textes[no_langue][17]+selectedItem.deck:'' }}
                   <v-icon right>mdi-plus</v-icon>
                 </v-btn>
               </template>
@@ -230,8 +230,8 @@
                     v-if="card_dialog.title !== 'Card'"
                     color="blue darken-1"
                     text
-                    @click="card_dialog.title==='Add Card'?saveFlashcard(selectedItem, card_dialog):dcard_update_save(selectedItem, card_dialog)"
-                  >{{ card_dialog.title==='Add Card'?'Save':'Modify' }}</v-btn>
+                    @click="card_dialog.title===textes[no_langue][1] + ' Card'?saveFlashcard(selectedItem, card_dialog):dcard_update_save(selectedItem, card_dialog)"
+                  >{{ card_dialog.title===textes[no_langue][1] + ' Card'?textes[no_langue][21]:textes[no_langue][3] }}</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -392,8 +392,8 @@ export default {
     lsKey: 'currentUser',
     docks: [],
     rules: {
-      required: value => !!value || 'Required.',
-      min: v => v.length >= 2 || 'Min 2 characters'
+      required: 0,
+      min: 0
     },
     card_dialog: {
       show: false,
@@ -431,7 +431,12 @@ export default {
         'Clé',
         'Valider',
         'Prec',
-        'Suivant'
+        'Suivant',
+        'pour ',
+        'Veuillez vous connecter svp !',
+        'Champ obligatoire.',
+        'Min 2 caractères',
+        'Sauver'
       ],
       [
         'Add your dock !',
@@ -450,7 +455,12 @@ export default {
         'Key',
         'Valid',
         'Prev',
-        'Next'
+        'Next',
+        'to ',
+        'Please log in!',
+        'Required.',
+        'Min 2 characters',
+        'Save'
       ]
     ]
   }),
@@ -675,6 +685,15 @@ export default {
         dialog.value = card.value
       }
       this.show_dialog('Revise', dialog, false)
+    },
+    set_rules () {
+      this.rules.required = value => !!value || this.textes[this.no_langue][19]
+      this.rules.min = v => v.length >= 2 || this.textes[this.no_langue][20]
+    }
+  },
+  watch: {
+    no_langue: function () {
+      this.set_rules()
     }
   },
   computed: {
@@ -713,9 +732,12 @@ export default {
   },
   created () {
     if (sessionStorage.getItem('currentUser') === null) {
-      alert('Veuillez vous connecter svp !')
+      alert(this.textes[this.no_langue][18])
       this.$router.push('/login')
-    }
+    }/* else if (this.deck.flashcards.length) {
+      this.card_dialog.title = ''
+    }*/
+    this.set_rules()
     this.getStocks()
     // this.docks.forEach(element => {
     //   element.active = false
