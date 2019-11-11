@@ -68,21 +68,23 @@ export default {
   }),
   methods: {
     async login () {
-      const lsKey = 'currentUser'
-      var currentUser = {
-        username: this.name,
-        password: this.password,
-        id: '',
-        imageAvatar: ''
-      }
-      const response = await this.axios.post(this.url + '/api/login', currentUser)
-      if (response.data.message === 'error') {
-        console.log('erreur') // lorsque l'on arrive sur la page, on ne doit pas pouvoir valider alors que rien n'est saisi
-        this.alert = true
-      } else {
-        console.log('pas d erreur')
-        sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
-        this.$router.push('/')
+      if (this.$refs.form.validate()) {
+        const lsKey = 'currentUser'
+        var currentUser = {
+          username: this.name,
+          password: this.password,
+          id: '',
+          imageAvatar: ''
+        }
+        const response = await this.axios.post(this.url + '/api/login', currentUser)
+        if (response.data.message === 'error') {
+          console.log('erreur') // lorsque l'on arrive sur la page, on ne doit pas pouvoir valider alors que rien n'est saisi
+          this.alert = true
+        } else {
+          console.log('pas d erreur')
+          sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
+          this.$router.push('/')
+        }
       }
     },
     reset () {

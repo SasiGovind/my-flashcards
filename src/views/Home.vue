@@ -734,9 +734,9 @@ export default {
     if (sessionStorage.getItem('currentUser') === null) {
       alert(this.textes[this.no_langue][18])
       this.$router.push('/login')
-    }/* else if (this.deck.flashcards.length) {
+    } /* else if (this.deck.flashcards.length) {
       this.card_dialog.title = ''
-    }*/
+    } */
     this.set_rules()
     this.getStocks()
     // this.docks.forEach(element => {
