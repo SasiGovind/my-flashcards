@@ -21,7 +21,7 @@
                   v-model="dockInput.placeholder"
                   :rules="[rules.required, rules.min]"
                   @keyup.enter="add('dock')"
-                  label="Ajoute ton dock !"
+                  :label=textes[no_langue][0]
                   outlined
                   dense
                   clearable
@@ -29,7 +29,7 @@
                 ></v-text-field>
               </v-flex>
               <v-flex lg3>
-                <v-btn class="ml-2" @click="add('dock')" color="primary">Ajouter</v-btn>
+                <v-btn class="ml-2" @click="add('dock')" color="primary">{{textes[no_langue][1]}}</v-btn>
               </v-flex>
             </v-layout>
             <v-layout v-else-if="dockInput.mode === 'update'">
@@ -38,7 +38,7 @@
                   v-model="dockInput.placeholder"
                   :rules="[rules.required, rules.min]"
                   @keyup.enter="update('dock')"
-                  label="Modifie ton deck !"
+                  :label=textes[no_langue][2]
                   outlined
                   dense
                   clearable
@@ -48,11 +48,11 @@
                 ></v-text-field>
               </v-flex>
               <v-flex lg3>
-                <v-btn class="ml-1" @click="update('dock')" color="yellow">Modifier</v-btn>
+                <v-btn class="ml-1" @click="update('dock')" color="yellow">{{textes[no_langue][3]}}</v-btn>
               </v-flex>
             </v-layout>
           </v-container>
-          <div v-if="docks.length === 0" class="my-auto">Espace vide ! ajoutez des docks</div>
+          <div v-if="docks.length === 0" class="my-auto">{{textes[no_langue][4]}}</div>
           <div v-else>
             <!-- Début docks -->
             <v-card class="mx-auto" tile>
@@ -94,7 +94,7 @@
                     v-model="dock.input.placeholder"
                     :rules="[rules.min]"
                     @keyup.enter="add('deck',dock.title)"
-                    label="Ajoute ton deck !"
+                    :label=textes[no_langue][5]
                     outlined
                     dense
                     clearable
@@ -179,7 +179,7 @@
             <v-dialog v-model="card_dialog.show" persistent max-width="600px">
               <template v-slot:activator="{ on }">
                 <v-btn @click="show_dialog('Add Card', card_dialog)" v-on="on" class="ma-2" rounded outlined color="success">
-                  Add Flashcard {{ (selectedItem.deck != '')?'to '+selectedItem.deck:'' }}
+                  {{textes[no_langue][1]}} Flashcard {{ (selectedItem.deck != '')?'to '+selectedItem.deck:'' }}
                   <v-icon right>mdi-plus</v-icon>
                 </v-btn>
               </template>
@@ -193,7 +193,7 @@
                       <v-col cols="12">
                         <v-text-field
                           v-model="card_dialog.key"
-                          label="Enter your key*"
+                          :label=textes[no_langue][6]
                           placeholder="France"
                           :readonly="card_dialog.title==='Card'?true:false"
                           required
@@ -208,7 +208,7 @@
                       <v-col cols="12">
                         <v-textarea
                           v-model="card_dialog.value"
-                          label="Enter your value*"
+                          :label=textes[no_langue][7]
                           placeholder="Paris"
                           :readonly="card_dialog.title==='Card'?true:false"
                           auto-grow
@@ -221,11 +221,11 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <small v-if="card_dialog.title!=='Card'" >*indicates required field</small>
+                  <small v-if="card_dialog.title!=='Card'" >{{textes[no_langue][8]}}</small>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close_card('Card', card_dialog, true)">Close</v-btn>
+                  <v-btn color="blue darken-1" text @click="close_card('Card', card_dialog, true)">{{textes[no_langue][9]}}</v-btn>
                   <v-btn
                     v-if="card_dialog.title !== 'Card'"
                     color="blue darken-1"
@@ -266,10 +266,10 @@
                   </v-list-item>
                 </v-list>
               </v-card>
-              <div v-else class="my-auto">Espace vide ! Ajoutez une carte</div>
+              <div v-else class="my-auto">{{textes[no_langue][10]}}</div>
             </template>
           </div>
-          <div v-else>Selectionnez un dock et un deck valide</div>
+          <div v-else>{{textes[no_langue][11]}}</div>
         </v-flex>
         <v-flex lg3 class="b-left">
           <div class="b-bottom">
@@ -277,7 +277,7 @@
           </div>
           <v-dialog v-model="play_dialog.show" persistent max-width="600px" @keydown.esc="close_card('Revise', play_dialog, false, true)" @keydown.left="shift_card(play_dialog, 'prev')" @keydown.right="shift_card(play_dialog, 'next')">
               <template v-slot:activator="{ on }">
-                <v-btn @click="show_play_cards(play_dialog)"  v-on="on" color="success" class="ma-2" rounded dark>Play {{ (selectedItem.deck != '')?selectedItem.deck:'' }} Cards</v-btn>
+                <v-btn @click="show_play_cards(play_dialog)"  v-on="on" color="success" class="ma-2" rounded dark>{{textes[no_langue][12]}} {{ (selectedItem.deck != '')?selectedItem.deck:'' }} Cards</v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -286,18 +286,18 @@
                 </v-card-title>
                 <v-card-text>
                   <div class="play_card_box">
-                    <div class="key">Key</div>
+                    <div class="key">{{textes[no_langue][13]}}</div>
                     <div class="key_value"><p class="mb-2">{{ play_dialog.key }}</p></div>
                   </div>
                   <div style="height:30px"></div>
                   <div class="play_card_box">
-                    <div class="key">Value</div>
+                    <div class="key">{{textes[no_langue][14]}}</div>
                     <div class="key_value"><p class="mb-2">{{ play_dialog.value }}</p></div>
                   </div>
                   <!-- <small>*indicates required field</small> -->
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'prev')">Prev</v-btn>
+                  <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'prev')">{{textes[no_langue][15]}}</v-btn>
                   <v-spacer></v-spacer>
                   <p v-if="play_dialog.currentDeck !== undefined" > {{ (play_dialog.currentCount+1)+'/'+play_dialog.currentDeck.length }} </p>
                   <v-spacer></v-spacer>
@@ -305,7 +305,7 @@
                     color="blue darken-1"
                     text
                     @click="shift_card(play_dialog, 'next')"
-                  >Next</v-btn>
+                  >{{textes[no_langue][16]}}</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -374,7 +374,7 @@ background-color: rgba(0, 0, 0, 0.06);
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-
+  props: ['no_langue'],
   name: 'home',
   data: () => ({
     value: true,
@@ -412,7 +412,47 @@ export default {
       value: '',
       currentDeck: '',
       currentCount: 0
-    }
+    },
+    textes: [
+      [
+        'Ajoute ton dock !',
+        'Ajouter',
+        'Modifie ton deck !',
+        'Modifier',
+        'Espace vide ! ajoutez des docks',
+        'Ajoute ton deck !',
+        'Entre ta clé',
+        'Entre ta valeur*',
+        '*indique les champs requis',
+        'Fermer',
+        'Espace vide ! Ajoutez une carte',
+        'Selectionnez un dock et un deck valide',
+        'Jouer',
+        'Clé',
+        'Valider',
+        'Prec',
+        'Suivant'
+      ],
+      [
+        'Add your dock !',
+        'Add',
+        'Modify your deck !',
+        'Modify',
+        'Empty space ! add docks',
+        'Add your deck !',
+        'Enter your key',
+        'Enter your value*',
+        '*indicates required field',
+        'Close',
+        'Empty space ! Add a card',
+        'Select a dock and a valid deck',
+        'Play',
+        'Key',
+        'Valid',
+        'Prev',
+        'Next'
+      ]
+    ]
   }),
   methods: {
     getConnectedUser () {

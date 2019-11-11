@@ -50,7 +50,7 @@ export default {
           'Prénom',
           'Adresse mail',
           'Pour que nous puissions vous répondre!',
-          'Texte (champs obligatoire)',
+          'Texte (champ obligatoire)',
           'Envoyer',
           'Valider votre saisie?'
         ],

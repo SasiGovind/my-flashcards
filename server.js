@@ -130,8 +130,10 @@ app.post('/api/login', (req, res) => {
   var usr = { username: req.body.username, password: req.body.password }
   var user = users.find(
     u => u.username === req.body.username)
-  console.log(JSON.stringify(user))
+    console.log(JSON.stringify(user))
+    console.log("ici", !user)
   if (!user) {
+    console.log("PAS RECONNU")
     usr.id = ++id
     usr.imageAvatar = urlAvatar
     users.push(usr)

@@ -10,25 +10,26 @@
     </v-alert>
   <v-form class="form" ref="form" v-model="valid" lazy-validation>
 
-    <h1> Page de connexion </h1>
+    <h1> {{textes[no_langue][0]}} </h1>
     <v-col cols="10" sm="6">
-    <v-text-field v-model="name" ref="id" :counter="12" :rules="idRules" label="Identifiant" required></v-text-field>
+    <v-text-field v-model="name" ref="id" :counter="12" :rules="idRules" :label=textes[no_langue][1] required></v-text-field>
     <v-text-field v-model="password" :append-icon="show ? 'mdi-plus' : 'mdi-visibility_off'"
             :rules="[rulesPWD.required, rulesPWD.min]" :type="show ? 'text' : 'password'"
              counter
-            @click:append="show = !show" ref="mdp" label="Mot de passe" required>
+            @click:append="show = !show" ref="mdp" :label=textes[no_langue][2] required>
     </v-text-field>
     </v-col>
-    <v-btn :disabled="!valid" color="success" class="mr-4" @click="login()">valider</v-btn>
-    <v-btn color="error" class="mr-4" @click="reset">Reset</v-btn>
+    <v-btn :disabled="!valid" color="success" class="mr-4" @click="login()">{{textes[no_langue][3]}}</v-btn>
+    <v-btn color="error" class="mr-4" @click="reset">{{textes[no_langue][4]}}</v-btn>
   </v-form>
 </div>
 </template>
 <script>
 export default {
+  props: ['no_langue'],
   data: () => ({
     alert: false,
-    message: 'Mot de passe inccorect',
+    message: 'Mot de passe incorrect',
     valid: true,
     name: '',
     password: '',
@@ -43,7 +44,23 @@ export default {
     rulesPWD: {
       required: value => !!value || 'Mot de passe requis.',
       min: v => v.length >= 8 || 'Min 8 characters'
-    }
+    },
+    textes: [
+      [
+        'Page de connexion',
+        'Identifiant',
+        'Mot de passe',
+        'Valider',
+        'Reset'
+      ],
+      [
+        'Login page',
+        'Login',
+        'Password',
+        'Validate',
+        'Reset'
+      ]
+    ]
   }),
   methods: {
     async login () {
@@ -56,8 +73,10 @@ export default {
       }
       const response = await this.axios.post(this.url + '/api/login', currentUser)
       if (response.data.message === 'error') {
+        console.log('erreur') // lorsque l'on arrive sur la page, on ne doit pas pouvoir valider alors que rien n'est saisi
         this.alert = true
       } else {
+        console.log('pas d erreur')
         sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
         this.$router.push('/')
       }

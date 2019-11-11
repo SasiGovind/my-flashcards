@@ -39,7 +39,7 @@
         >
           <template v-slot:activator>
             <v-list-item-content>
-              <a href=""> <v-list-item-title>Utilisateurs</v-list-item-title> </a>
+              <a href=""> <v-list-item-title>{{textes[no_langue][2]}}</v-list-item-title> </a>
             </v-list-item-content>
           </template>
           <v-list-item v-for="user in users" :key="user.username" link>
@@ -50,7 +50,7 @@
 
         </v-list-group>
         <div class="pa-2">
-          <v-btn dark style="position: absolute; bottom : 10px; width: 95%"  @click="logout" >Déconnexion</v-btn>
+          <v-btn dark style="position: absolute; bottom : 10px; width: 95%"  @click="logout" >{{textes[no_langue][3]}}</v-btn>
         </div>
       </v-list>
       </v-img>
@@ -60,6 +60,7 @@
 
 <script>
 export default {
+  props: ['no_langue'],
   data: () => ({
     toReload: 0,
     currentUser: null,
@@ -69,8 +70,22 @@ export default {
     users: [],
     url: 'http://localhost:4000',
     items: [
-      { title: 'Accueil', icon: 'dashboard', link: '/' },
-      { title: 'Paramètres', icon: 'question_answer', link: '#/settings' }
+      { title: '', icon: 'dashboard', link: '/' },
+      { title: '', icon: 'question_answer', link: '#/settings' }
+    ],
+    textes: [
+      [
+        'Accueil',
+        'Paramètres',
+        'Utilisateurs',
+        'Déconnexion'
+      ],
+      [
+        'Home',
+        'Settings',
+        'Users',
+        'Logout'
+      ]
     ]
   }),
   methods: {
@@ -97,7 +112,20 @@ export default {
     logout () {
       this.$router.push('/login')
       sessionStorage.removeItem(this.lsKey)
+    },
+    update_titles () {
+      for (let i = 0; i < this.items.length; i++) {
+        this.items[i].title = this.textes[this.no_langue][i]
+      }
     }
+  },
+  watch: {
+    no_langue: function () {
+      this.update_titles()
+    }
+  },
+  created: function () {
+    this.update_titles()
   },
   beforeRouteUpdate () {
     this.forceRender() // ne marche pas, help Sasi
