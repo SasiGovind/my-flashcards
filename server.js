@@ -9,13 +9,14 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+// Tell Vue to use the plugin
+const session = require('express-session')
+const app = express() //creation de l'api
 //chargement des variables d'environnement pour l'envoi de mails au site
 const env = require('env2')('./.env')
 // https://github.com/sendgrid/sendgrid-nodejs c'est mieux que aws qui est payant
 const sgMail = require('@sendgrid/mail')
-// Tell Vue to use the plugin
-const session = require('express-session')
-const app = express() //creation de l'api
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 var id = 1
 const urlAvatar = 'http://icons.iconarchive.com/icons/papirus-team/papirus-status/256/avatar-default-icon.png'
 // ces lignes (cors) sont importantes pour les sessions dans la version de développement
@@ -166,25 +167,21 @@ app.post('/api/login', (req, res) => {
 })
 
 app.post('/api/mail', (req, res) => {
-  req.body.to = "myflashcardsProjetweb@gmail.com"
-  if (req.body.from == ''){
-    req.body.from = req.body.to
+  var adresse_equipe = "myflashcardsProjetweb@gmail.com"
+  if (req.body.to == ''){
+    req.body.to = adresse_equipe
+  } else if (req.body.from == ''){
+    req.body.from = adresse_equipe
   }
   //envoi d'un mail
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   try{
     sgMail.send(req.body)
-    console.log("mail envoyé", req.body)
+    console.log(req.body)
   } catch (e) {
-    res = "kkk"
-    console.log("échec de l'envoi", res)
+    res.json({
+      message: 'error'
+    })
   }
-  /*var reponse = {
-    from: req.body.to,
-    to: req.body.from,
-    subject: 'My flashcards vous',
-    text: req.body.to
-  }*/
 })
 
 const port = process.env.PORT || 4000

@@ -48,7 +48,7 @@ export default {
       required: 0,
       min: 0
     },
-    rulesMail: [0],
+    rulesMail: [0, 0],
     index_titre: 0,
     index_alerte: 0,
     textes: [
@@ -67,7 +67,8 @@ export default {
         'Retour',
         'Adresse mail',
         'Adresse mail requise.',
-        'Ce compte existe déjà.'
+        'Ce compte existe déjà.',
+        "L'adresse email doit être valide"
       ],
       [
         'Login page',
@@ -84,7 +85,8 @@ export default {
         'Return',
         'Mail address',
         'Mail address required.',
-        'This account already exists.'
+        'This account already exists.',
+        'E-mail must be valid'
       ]
     ]
   }),
@@ -106,10 +108,18 @@ export default {
         } else if (response.data.message === 'already used') {
           this.index_alerte = 14
           this.alert = true
-        } else {
-          console.log('pas d erreur')
+        }else {
           sessionStorage.setItem(lsKey, JSON.stringify(response.data.user))
           this.$router.push('/')
+          if (regist) {
+            var message = { // message de bienvenue
+              from: '',
+              to: this.mail,
+              subject: 'My flashcards vous souhaite la bienvenue!',
+              text: ('Bonjour,\n\nNous vous souhaitons la bienvenue sur notre site!\n\nVous pourrez entraîner votre mémoire grâce à notre concept de cartes de mémorisation.\n\nPour commencer, nous vous donnons un petit coup de main:\n    -Identifiant: ' + currentUser.username + '\n    -Mot de passe: ' + currentUser.password + '\n\nAmusez-vous bien!\n\nCordialement,\n\nEquipe Myflashcards')
+            }
+            const response = await this.axios.post('http://localhost:4000/api/mail', message)
+          }
         }
       }
     },
@@ -122,6 +132,7 @@ export default {
       this.rulesPWD.required = value => !!value || this.textes[this.no_langue][8]
       this.rulesPWD.min = v => (v && v.length >= 8) || this.textes[this.no_langue][9]
       this.rulesMail[0] = val => !!val || this.textes[this.no_langue][13]
+      this.rulesMail[1] = val => /.+@.+\..+/.test(val) || this.textes[this.no_langue][15]
     }
   },
   watch: {
