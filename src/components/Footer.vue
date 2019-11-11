@@ -4,8 +4,8 @@
     <Contact :no_langue="no_langue"/>
     <Notice :no_langue="no_langue"/>
     <span>{{ textes[no_langue][1] }}
-        <select v-model="langage" @change="changer_langage" style="color: black; background:white; appearance: menulist">
-            <option v-for="langue in langues" :value="langue" :key="langue">{{ langue }}</option>
+        <select v-model="langage" @change="$emit('nouv_langage', langues.indexOf(langage))" style="color: black; background:white; appearance: menulist">
+            <option v-for="langue in langues" :key="langue">{{ langue }}</option>
         </select>
     </span>
 </footer>
@@ -33,6 +33,7 @@ import Notice from './Notice'
 import Contact from './Contact'
 
 export default {
+  props: ['no_langue'],
   components: { Notice, Contact },
   data: function () {
     return {
@@ -42,7 +43,6 @@ export default {
         'Français',
         'English'
       ],
-      no_langue: 0,
       textes: [
         [
           'Mis en ligne le',
@@ -53,11 +53,6 @@ export default {
           'Selected language:'
         ]
       ]
-    }
-  },
-  methods: {
-    changer_langage () {
-      this.no_langue = this.langues.indexOf(this.langage)
     }
   },
   created: function () {

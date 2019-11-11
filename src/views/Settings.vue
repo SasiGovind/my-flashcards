@@ -55,7 +55,7 @@
           align="center"
           justify="center"
         >
-          <h3 class="title">Vous avez choisi {{selectedUser}} comme avatar </h3>
+          <h3 class="title">{{textes[no_langue][0]}} {{selectedUser}} {{textes[no_langue][1]}} </h3>
         </v-row>
       </v-sheet>
     </v-expand-transition>
@@ -65,13 +65,24 @@
 
 <script>
 export default {
+  props: ['no_langue'],
   data: () => ({
     model: null,
     selectedUser: '',
     lskey: 'currentUser',
     url: 'http://localhost:4000',
     items: [{ img: require('../assets/avatar/Wendy.png'), title: 'Wendy' }, { img: require('../assets/avatar/Butters.png'), title: 'Butters' },
-      { img: require('../assets/avatar/Kenny.png'), title: 'Kenny' }, { img: require('../assets/avatar/Kyle.png'), title: 'Kyle' }, { img: require('../assets/avatar/Token.png'), title: ' Token' } ]
+      { img: require('../assets/avatar/Kenny.png'), title: 'Kenny' }, { img: require('../assets/avatar/Kyle.png'), title: 'Kyle' }, { img: require('../assets/avatar/Token.png'), title: ' Token' } ],
+    textes: [
+      [
+        'Vous avez choisi',
+        'comme avatar'
+      ],
+      [
+        'You choose',
+        'as an avatar'
+      ]
+    ]
 
   }),
   methods: {
