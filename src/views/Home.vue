@@ -1,13 +1,13 @@
 <template>
-    <div class="home">
-      <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-      <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-      <v-container fluid class="py-1">
-        <v-layout row wrap class="text-center">
-          <v-flex lg3 class="blue height-sm"></v-flex>
-          <v-flex lg6 class="red"></v-flex>
-          <v-flex lg3 class="green"></v-flex>
-        </v-layout>
+  <div class="home">
+    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <v-container fluid class="py-1">
+      <v-layout row wrap class="text-center">
+        <v-flex lg3 class="blue height-sm"></v-flex>
+        <v-flex lg6 class="red"></v-flex>
+        <v-flex lg3 class="green"></v-flex>
+      </v-layout>
 
       <v-layout row wrap class="text-center">
         <v-flex lg3 class="b-right">
@@ -134,9 +134,17 @@
                           <v-list-item-title v-text="deck.flashcards.length + ' cards'"></v-list-item-title>
                         </v-list-item-content>
                         <v-list-item-action style="position:absolute; right:20%" class="my-auto">
-                          <v-btn icon>
+                          <!-- <v-btn icon>
                             <v-icon color="grey lighten-1">mdi-information-outline</v-icon>
-                          </v-btn>
+                          </v-btn>-->
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                              <v-btn icon v-on="on">
+                                <v-icon color="grey lighten-1">mdi-information-outline</v-icon>
+                              </v-btn>
+                            </template>
+                            <span>Examen Success : {{ deck!=undefined?Math.round((deck.success/deck.flashcards.length)*100):'0' }} %</span>
+                          </v-tooltip>
                         </v-list-item-action>
                         <v-hover v-slot:default="{ hover }" close-delay="200">
                           <v-list-item-action style="position:absolute; right:10%" class="my-auto">
@@ -178,8 +186,15 @@
             <!-- dialog for flashcards -->
             <v-dialog v-model="card_dialog.show" persistent max-width="600px">
               <template v-slot:activator="{ on }">
-                <v-btn @click="show_dialog(textes[no_langue][1] + ' Card', card_dialog)" v-on="on" class="ma-2" rounded outlined color="success">
-                  {{textes[no_langue][1]}} Flashcard {{ (selectedItem.deck != '')?textes[no_langue][17]+selectedItem.deck:'' }}
+                <v-btn
+                  @click="show_dialog(textes[no_langue][1] + ' Card', card_dialog)"
+                  v-on="on"
+                  class="ma-2"
+                  rounded
+                  outlined
+                  color="red"
+                >
+                 {{textes[no_langue][1]}} Flashcard {{ (selectedItem.deck != '')?textes[no_langue][17]+selectedItem.deck:'' }}
                   <v-icon right>mdi-plus</v-icon>
                 </v-btn>
               </template>
@@ -221,11 +236,15 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <small v-if="card_dialog.title!=='Card'" >{{textes[no_langue][8]}}</small>
+                  <small v-if="card_dialog.title!=='Card'">{{textes[no_langue][8]}}</small>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close_card('Card', card_dialog, true)">{{textes[no_langue][9]}}</v-btn>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="close_card(card_dialog, true, true)"
+                  >{{textes[no_langue][9]}}</v-btn>
                   <v-btn
                     v-if="card_dialog.title !== 'Card'"
                     color="blue darken-1"
@@ -275,40 +294,197 @@
           <div class="b-bottom">
             <span class="under-line text-uppercase font-weight-regular title">Temple</span>
           </div>
-          <v-dialog v-model="play_dialog.show" persistent max-width="600px" @keydown.esc="close_card('Revise', play_dialog, false, true)" @keydown.left="shift_card(play_dialog, 'prev')" @keydown.right="shift_card(play_dialog, 'next')">
-              <template v-slot:activator="{ on }">
-                <v-btn @click="show_play_cards(play_dialog)"  v-on="on" color="success" class="ma-2" rounded dark>{{textes[no_langue][12]}} {{ (selectedItem.deck != '')?selectedItem.deck:'' }} Cards</v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline mx-auto">{{ play_dialog.title }}</span>
-                  <v-icon style="position:absolute; right:3%;"  @click="close_card('Revise', play_dialog, false, true)">mdi-close</v-icon>
-                </v-card-title>
-                <v-card-text>
-                  <div class="play_card_box">
-                    <div class="key">{{textes[no_langue][13]}}</div>
-                    <div class="key_value"><p class="mb-2">{{ play_dialog.key }}</p></div>
+          <v-dialog
+            v-model="play_dialog.show"
+            persistent
+            max-width="600px"
+            @keydown.esc="close_card(play_dialog, false, false, true)"
+            @keydown.left="shift_card(play_dialog, 'prev')"
+            @keydown.right="shift_card(play_dialog, 'next')"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn
+              v-if="selectedItem.deck != '' && selectedItem.dock != ''"
+                @click="show_play_cards(play_dialog)"
+                v-on="on"
+                color="success"
+                class="ma-2"
+                rounded
+                dark
+              >{{textes[no_langue][12]}} {{ (selectedItem.deck != '')?selectedItem.deck:'' }} Cards</v-btn>
+              <v-btn
+              v-else
+              depressed
+              rounded
+              >
+                dock : '{{ selectedItem.dock }}' > deck : '{{ selectedItem.deck }}'
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline mx-auto">{{ play_dialog.title }}</span>
+                <v-icon
+                  style="position:absolute; right:3%;"
+                  @click="close_card(play_dialog, false, false, true)"
+                >mdi-close</v-icon>
+              </v-card-title>
+              <v-card-text>
+                <div v-if="play_dialog.title === 'Examen'" class="play_card_success"><v-chip class="ma-0">Answers : {{ this.dfind("deck", this.selectedItem.dock, this.selectedItem.deck)!=undefined?this.dfind("deck", this.selectedItem.dock, this.selectedItem.deck).success:'' }} / {{ play_dialog.currentDeck!=undefined?play_dialog.currentDeck.length:'' }}</v-chip></div>
+              </v-card-text>
+              <v-card-text>
+                <div class="play_card_box">
+                  <div class="key">{{textes[no_langue][13]}}</div>
+                  <div
+                    v-if="play_dialog.title==='Revision' || (play_dialog.title==='Examen' && play_dialog.examen.key===false)"
+                    class="key_value"
+                  >
+                    <p class="mb-2">{{ play_dialog.key }}</p>
                   </div>
-                  <div style="height:30px"></div>
-                  <div class="play_card_box">
-                    <div class="key">{{textes[no_langue][14]}}</div>
-                    <div class="key_value"><p class="mb-2">{{ play_dialog.value }}</p></div>
+                  <div v-else-if="play_dialog.title==='Examen' && play_dialog.examen.key===true">
+                    <v-container style="border-radius: 20px;" class="grey lighten-5 py-1">
+                      <v-row no-gutters>
+                        <template v-for="(n, i) in currentExamenCardAnswers">
+                          <v-col :key="i+1">
+                            <v-btn
+                              style="width:95%;"
+                              :color="play_dialog.currentCard.answerSelected===i || play_dialog.currentCard.answerSelected>=0? (n.correct)?'green':'red' : ''"
+                              @click="selectCardAnswer(i, false, n.correct)"
+                              class="mx-1"
+                              rounded
+                            >
+                              {{n.text}}
+                              <v-icon
+                                v-if="play_dialog.currentCard.answerSelected===i && n.correct"
+                                right
+                              >mdi-check-circle-outline</v-icon>
+                              <v-icon
+                                v-else-if="play_dialog.currentCard.answerSelected===i && !n.correct"
+                                right
+                              >mdi-close-circle-outline</v-icon>
+                            </v-btn>
+                          </v-col>
+                          <v-responsive v-if="i+1 === 2" :key="`width-${i+1}`" width="100%"></v-responsive>
+                        </template>
+                      </v-row>
+                    </v-container>
                   </div>
-                  <!-- <small>*indicates required field</small> -->
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'prev')">{{textes[no_langue][15]}}</v-btn>
-                  <v-spacer></v-spacer>
-                  <p v-if="play_dialog.currentDeck !== undefined" > {{ (play_dialog.currentCount+1)+'/'+play_dialog.currentDeck.length }} </p>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="shift_card(play_dialog, 'next')"
-                  >{{textes[no_langue][16]}}</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+                </div>
+                <!-- spacer -->
+                <div style="height:30px"></div>
+                <!-- spacer -->
+                <div class="play_card_box">
+                  <div class="key">{{textes[no_langue][14]}}</div>
+                  <div
+                    v-if="play_dialog.title==='Revision' || (play_dialog.title==='Examen' && play_dialog.examen.key===true)"
+                    class="key_value"
+                  >
+                    <p class="mb-2">{{ play_dialog.value }}</p>
+                  </div>
+                  <div v-else-if="play_dialog.title==='Examen' && play_dialog.examen.key===false">
+                    <v-container style="border-radius: 20px;" class="grey lighten-5 py-1">
+                      <v-row no-gutters>
+                        <template v-for="(n, i) in currentExamenCardAnswers">
+                          <v-col :key="i+1">
+                            <v-btn
+                              style="width:95%;"
+                              :color="play_dialog.currentCard.answerSelected===i || play_dialog.currentCard.answerSelected>=0? (n.correct)?'green':'red' : ''"
+                              @click="selectCardAnswer(i, false, n.correct)"
+                              class="mx-1"
+                              rounded
+                            >
+                              {{n.text}}
+                              <v-icon
+                                v-if="play_dialog.currentCard.answerSelected===i && n.correct"
+                                right
+                              >mdi-check-circle-outline</v-icon>
+                              <v-icon
+                                v-else-if="play_dialog.currentCard.answerSelected===i && !n.correct"
+                                right
+                              >mdi-close-circle-outline</v-icon>
+                            </v-btn>
+                          </v-col>
+                          <v-responsive v-if="i+1 === 2" :key="`width-${i+1}`" width="100%"></v-responsive>
+                        </template>
+                      </v-row>
+                    </v-container>
+                  </div>
+                </div>
+                <!-- <small>*indicates required field</small> -->
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'prev')">{{textes[no_langue][15]}}</v-btn>
+                <v-spacer></v-spacer>
+                <p
+                  v-if="play_dialog.currentDeck !== undefined"
+                >{{ (play_dialog.currentCount+1)+'/'+play_dialog.currentDeck.length }}</p>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="shift_card(play_dialog, 'next')">{{textes[no_langue][16]}}</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <div>
+            <v-card>
+              <v-tabs
+                v-model="tab"
+                background-color="deep-purple accent-4"
+                centered
+                dark
+                height="40px"
+                grow
+                icons-and-text
+              >
+                <v-tabs-slider></v-tabs-slider>
+                <v-tab @click="play_dialog.title='Revision'" href="#tab-1">Revision</v-tab>
+                <v-tab @click="play_dialog.title='Examen'" href="#tab-2">Examen</v-tab>
+              </v-tabs>
+              <v-tabs-items v-model="tab">
+                <v-tab-item value="tab-1">
+                  <v-card flat>
+                    <v-card-text class="py-2">Revise all your cards</v-card-text>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item value="tab-2">
+                  <v-card flat>
+                    <div style="display:inline-block">
+                      <div style="display:table-cell;vertical-align:middle;" class="mx-0 px-0 pt-2">
+                        <v-btn
+                          class="mx-2"
+                          style="min-width:100px"
+                          :color="play_dialog.examen.key ? 'purple white--text' : 'grey lighten-1'"
+                          small
+                          active-class="purple white--text"
+                          depressed
+                          rounded
+                          dense
+                          @click="play_dialog.examen.key=true"
+                        >Key</v-btn>
+                        <v-btn
+                          :color="!play_dialog.examen.key ? 'purple white--text' : 'grey lighten-1'"
+                          style="min-width:100px"
+                          small
+                          class="mx-2"
+                          active-class="purple white--text"
+                          depressed
+                          rounded
+                          @click="play_dialog.examen.key=false"
+                        >Value</v-btn>
+                      </div>
+                    </div>
+                  </v-card>
+                </v-tab-item>
+              </v-tabs-items>
+              <!-- <v-tabs-items v-model="tab">
+              <v-tab-item v-for="i in 3" :key="i" :value="'tab-' + i">
+                <v-card flat>
+                  <v-card-text>{{ text }}</v-card-text>
+                </v-card>
+              </v-tab-item>
+              </v-tabs-items>-->
+            </v-card>
+          </div>
+          <div
+            style="font-size:12px; margin-top:5px"
+          >More features to come : countdown per card, order normal/continous/random, choose number of cards to train, etc</div>
         </v-flex>
       </v-layout>
     </v-container>
@@ -344,13 +520,21 @@
   text-decoration: underline;
 }
 
+.play_card_success {
+  border-radius: 20px;
+  width: 22%;
+  margin: auto;
+  transition-property: background-color;
+  transition-duration: 1s;
+}
+
 .play_card_box {
-background-color: rgba(0, 0, 0, 0.06);
-    border-radius: 20px;
-    width: 95%;
-    margin: auto;
-    transition-property: background-color;
-    transition-duration: 1s;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  width: 95%;
+  margin: auto;
+  transition-property: background-color;
+  transition-duration: 1s;
 }
 
 .play_card_box:hover {
@@ -367,6 +551,10 @@ background-color: rgba(0, 0, 0, 0.06);
   /* font-weight: 500 */
 }
 
+.colored {
+  color: red;
+  background-color: aqua;
+}
 </style>
 
 <script>
@@ -384,6 +572,7 @@ export default {
       dock: '',
       deck: ''
     },
+    tab: null,
     dockInput: {
       mode: 'add',
       oldTitle: '',
@@ -407,11 +596,17 @@ export default {
     },
     play_dialog: {
       show: false,
-      title: 'Revise',
+      title: 'Revision',
+      examen: {
+        key: true
+      },
       key: '',
       value: '',
       currentDeck: '',
-      currentCount: 0
+      currentCount: 0,
+      currentCard: {
+        answerSelected: -1
+      }
     },
     textes: [
       [
@@ -472,7 +667,9 @@ export default {
     // async getName() {}
     async getStocks () {
       this.currentUser = this.getConnectedUser() // Penser à controler si current user nul
-      const response = await this.axios.post(this.server_url + '/stock/getStocks')
+      const response = await this.axios.post(
+        this.server_url + '/stock/getStocks'
+      )
       // this.docks = response.data.docks
       // this.currentUser ? this.docks.push(response.data.docks.find(u => u.id === this.currentUser.id)) : this.docks = [])
       var dock = response.data.docks.filter(u => u.id === this.currentUser.id)
@@ -483,8 +680,7 @@ export default {
       }
     },
     updateStocks () {
-      this.axios.post(this.server_url + '/stock/updateStocks', this.docks
-      )
+      this.axios.post(this.server_url + '/stock/updateStocks', this.docks)
     },
     dfind (place, kdock, kdeck = -1) {
       if (kdock === '' && kdeck === '') return false
@@ -522,7 +718,9 @@ export default {
           },
           decks: []
         })
-      } else pack.push({ title: input.placeholder, flashcards: [] })
+      } else {
+        pack.push({ title: input.placeholder, flashcards: [], success: 0 })
+      }
       input.placeholder = ''
       this.updateStocks()
     },
@@ -566,7 +764,7 @@ export default {
       this.updateStocks()
     },
     show_dialog (title, dialog, resetInput = true) {
-      dialog.title = title
+      if (title !== '') dialog.title = title
       if (resetInput) {
         dialog.key = ''
         dialog.value = ''
@@ -600,7 +798,7 @@ export default {
         })
         this.updateStocks()
       }
-      this.close_card('Card', this.card_dialog, true)
+      this.close_card(this.card_dialog, true, true)
     },
     dcard_update_start (inKey, inValue) {
       this.card_dialog.title = 'Modify Card'
@@ -630,7 +828,7 @@ export default {
           }
         }
       }
-      this.close_card('Card', this.card_dialog, true)
+      this.close_card(this.card_dialog, true, true)
     },
     dcard_delete (inKey, inValue) {
       if (this.currentFlashcardsCount > 0) {
@@ -650,8 +848,14 @@ export default {
         }
       }
     },
-    close_card (defaultTitle, dialog, clearOldValue = false, resetCount = false) {
-      dialog.title = defaultTitle
+    close_card (
+      dialog,
+      defaultTitle = false,
+      clearOldValue = false,
+      resetCount = false
+    ) {
+      dialog.show = false
+      if (defaultTitle) dialog.title = 'Card'
       dialog.key = ''
       dialog.value = ''
       if (clearOldValue) {
@@ -659,12 +863,20 @@ export default {
         dialog.old_card.value = ''
       }
       if (resetCount) dialog.currentCount = 0
-      dialog.show = false
+      if (dialog.title === 'Examen') {
+        this.selectCardAnswer(-1, true) // reset
+        // console.log(this.dfind('deck', this.selectedItem.dock, this.selectedItem.deck))
+        this.updateStocks()
+      }
     },
     shift_card (dialog, direction) {
-      var shift = (direction === 'next') ? 1 : -1
+      var shift = direction === 'next' ? 1 : -1
       var i = dialog.currentCount + shift
-      if (dialog.currentDeck !== undefined && i < dialog.currentDeck.length && i >= 0) {
+      if (
+        dialog.currentDeck !== undefined &&
+        i < dialog.currentDeck.length &&
+        i >= 0
+      ) {
         var card = dialog.currentDeck[i]
         // console.log('card', card)
         // console.log('before set', dialog)
@@ -672,6 +884,7 @@ export default {
         dialog.key = card.key
         dialog.value = card.value
         dialog.currentCount += shift
+        this.selectCardAnswer(-1, true) // reset
         // console.log('playcard value', dialog.key + ' + ' + dialog.value)
         // console.log('after set', dialog)
       }
@@ -679,16 +892,62 @@ export default {
     show_play_cards (dialog) {
       // this.shift_card(dialog)
       var first = dialog.currentCount // 0
-      if (dialog.currentDeck !== undefined && first < dialog.currentDeck.length) {
+      if (
+        dialog.currentDeck !== undefined &&
+        first < dialog.currentDeck.length
+      ) {
         var card = dialog.currentDeck[first]
         dialog.key = card.key
         dialog.value = card.value
       }
-      this.show_dialog('Revise', dialog, false)
+      this.show_dialog(this.play_dialog.title, dialog, false)
+      if (this.play_dialog.title === 'Examen' && this.selectedItem.deck !== '' && this.selectedItem.dock !== '') {
+        this.dfind(
+          'deck',
+          this.selectedItem.dock,
+          this.selectedItem.deck
+        ).success = 0
+      }
+      // this.check(this.currentExamenCardAnswers)
+      // this.check(this.play_dialog.answerButtons)
     },
     set_rules () {
       this.rules.required = value => !!value || this.textes[this.no_langue][19]
       this.rules.min = v => v.length >= 2 || this.textes[this.no_langue][20]
+    },
+    shuffle (array) {
+      var currentIndex = array.length
+      var temporaryValue
+      var randomIndex
+      while (currentIndex !== 0) {
+        // While there remain elements to shuffle...
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex)
+        currentIndex -= 1
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex]
+        array[currentIndex] = array[randomIndex]
+        array[randomIndex] = temporaryValue
+      }
+      return array
+    },
+    selectCardAnswer (i, reset = false, correct) {
+      if (reset) this.play_dialog.currentCard.answerSelected = i
+      else {
+        if (this.play_dialog.currentCard.answerSelected === -1) {
+          this.play_dialog.currentCard.answerSelected = i
+        }
+        if (correct && this.selectedItem.deck !== '' && this.selectedItem.dock !== '') {
+          this.dfind(
+            'deck',
+            this.selectedItem.dock,
+            this.selectedItem.deck
+          ).success += 1
+        }
+      }
+    },
+    check (show) {
+      // console.log(show)
     }
   },
   watch: {
@@ -709,6 +968,7 @@ export default {
       } else return -1
     },
     currentFlashcards: function () {
+      // peut être simplfier avec currentDeckComputed
       if (this.selectedItem.dock !== '' && this.selectedItem.deck !== '') {
         var cards = this.dfind(
           'deck',
@@ -720,6 +980,7 @@ export default {
       } else return undefined
     },
     currentDeckComputed: {
+      // peut être simplfier avec currentFlashcards
       get: function () {
         return this.play_dialog.currentDeck
       },
@@ -728,6 +989,45 @@ export default {
         this.play_dialog.currentCount = 0
         // console.log('dialog setter', this.play_dialog)
       }
+    },
+    currentExamenCardAnswers: function () {
+      if (this.play_dialog.title !== 'Examen') return undefined
+      var cards = this.play_dialog.currentDeck
+      if (cards === undefined) return undefined
+      var cardsSize = cards.length
+      var currentCard = cards[this.play_dialog.currentCount]
+      if (currentCard === undefined) return undefined
+      var answers = []
+      if (this.play_dialog.examen.key) {
+        answers.push({ text: currentCard.key, correct: true, show: false })
+      } else {
+        answers.push({ text: currentCard.value, correct: true, show: false })
+      }
+      var allIndex = Array.from(Array(cardsSize).keys())
+      if (cardsSize > 1) { // allIndex.length = cardsSize
+        allIndex.splice(allIndex.indexOf(this.play_dialog.currentCount), 1)
+        allIndex = this.shuffle(allIndex)
+        var answwersNumber = (cardsSize > 4) ? 4 : cardsSize
+        if (this.play_dialog.examen.key) {
+          for (let i = 0; i < answwersNumber - 1; i++) {
+            answers.push({
+              text: cards[allIndex[i]].key,
+              correct: false,
+              show: false
+            })
+          }
+        } else {
+          for (let i = 0; i < answwersNumber - 1; i++) {
+            answers.push({
+              text: cards[allIndex[i]].value,
+              correct: false,
+              show: false
+            })
+          }
+        }
+        answers = this.shuffle(answers)
+      }
+      return answers
     }
   },
   created () {
@@ -739,9 +1039,11 @@ export default {
     } */
     this.set_rules()
     this.getStocks()
-    // this.docks.forEach(element => {
-    //   element.active = false
-    // })
+    // Quand on se renvoi un objet, on renvoi sa référence qui reste inchangé
+    // var arr = [{x:'a', y: 'b'}, {x:'c', y: 'd'}]
+    // var obj = arr.find(obj => obj.x==='a')
+    // obj.x = 'z'
+    // console.log('arr', arr)
   }
   // components: {
   //   HelloWorld
