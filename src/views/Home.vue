@@ -373,7 +373,7 @@
                 <div style="height:30px"></div>
                 <!-- spacer -->
                 <div class="play_card_box">
-                  <div class="key">{{textes[no_langue][14]}}</div>
+                  <div class="key">{{textes[no_langue][26]}}</div>
                   <div
                     v-if="play_dialog.title==='Revision' || (play_dialog.title==='Examen' && play_dialog.examen.key===true)"
                     class="key_value"
