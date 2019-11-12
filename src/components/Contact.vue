@@ -82,7 +82,7 @@ export default {
       if (this.$refs.form.validate()) {
         if (confirm(this.textes[this.no_langue][7])) {
           this.message.subject = 'Contact ' + this.message.nom + ' ' + this.message.prenom
-          const response = await this.axios.post('http://localhost:4000/api/mail', this.message)
+          const response = await this.axios.post('/api/mail', this.message)
           console.log('reponse', response)
         }
       }

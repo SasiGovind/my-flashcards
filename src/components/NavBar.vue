@@ -67,7 +67,7 @@ export default {
     drawer: null,
     id: '',
     users: [],
-    url: 'http://localhost:4000',
+    url: '',
     items: [
       { title: '', icon: 'dashboard', link: '/' },
       { title: '', icon: 'question_answer', link: '#/settings' }

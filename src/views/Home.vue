@@ -567,7 +567,7 @@ export default {
   data: () => ({
     value: true,
     currentUser: null,
-    server_url: 'http://localhost:4000',
+    server_url: '',
     selectedItem: {
       dock: '',
       deck: ''

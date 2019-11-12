@@ -70,7 +70,7 @@ export default {
     model: null,
     selectedUser: '',
     lskey: 'currentUser',
-    url: 'http://localhost:4000',
+    url: '',
     items: [{ img: require('../assets/avatar/Wendy.png'), title: 'Wendy' }, { img: require('../assets/avatar/Butters.png'), title: 'Butters' },
       { img: require('../assets/avatar/Kenny.png'), title: 'Kenny' }, { img: require('../assets/avatar/Kyle.png'), title: 'Kyle' }, { img: require('../assets/avatar/Token.png'), title: ' Token' } ],
     textes: [

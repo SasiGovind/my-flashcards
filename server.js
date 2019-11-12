@@ -26,6 +26,10 @@ app.use(
     origin: 'http://localhost:8080'
   })
 )
+
+const path = require('path')
+app.use(express.static(path.join(__dirname, 'dist/')))
+
 app.use(
   session({
     secret: 'blablabla', // changez cette valeur
@@ -36,9 +40,6 @@ app.use(
 )
 app.use(morgan('dev')) // log des requetes dans la console
 app.use(bodyParser.json())
-
-const path = require('path')
-app.use(express.static(path.join(__dirname, '/dist')))
 
 const users = [
   {
