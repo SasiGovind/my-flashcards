@@ -96,7 +96,7 @@ export default {
       this.toReload += 1
     },
     async getUser () {
-      console.log(this.getConnectedUser())
+      // console.log(this.getConnectedUser())
       const listusers = await this.axios.post(this.url + '/api/users')
       this.currentUser = this.getConnectedUser()
       this.users = listusers.data.users
