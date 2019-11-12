@@ -1,7 +1,8 @@
 <template>
   <nav>
     <v-app-bar class="nav" app extended extensionHeight>
-      <v-btn icon v-bind:disabled="!connecte" :key='toReload' @click.stop="drawer = !drawer" @click="getUser">
+      <v-btn icon v-bind:disabled="false" :key='toReload' @click.stop="drawer = !drawer" @click="getUser">
+        <!-- disabled="!connecte" -->
         <v-icon>fas fa-list</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
