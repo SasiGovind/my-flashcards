@@ -118,7 +118,7 @@ export default {
               subject: 'My flashcards vous souhaite la bienvenue!',
               text: ('Bonjour,\n\nNous vous souhaitons la bienvenue sur notre site!\n\nVous pourrez entraîner votre mémoire grâce à notre concept de cartes de mémorisation.\n\nPour commencer, nous vous donnons un petit coup de main:\n    -Identifiant: ' + currentUser.username + '\n    -Mot de passe: ' + currentUser.password + '\n\nAmusez-vous bien!\n\nCordialement,\n\nEquipe Myflashcards')
             }
-            await this.axios.post('http://localhost:4000/api/mail', message)
+            this.axios.post('http://localhost:4000/api/mail', message)
           }
         }
       }

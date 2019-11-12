@@ -199,7 +199,7 @@ app.post('/api/login', (req, res) => {
 })
 
 app.post('/api/mail', (req, res) => {
-  var adresseEquipe = 'myflashcardsProjetweb@gmail.com'
+  var adresseEquipe = 'myflashcardsesiea@gmail.com'
   if (req.body.to === '') {
     req.body.to = adresseEquipe
   } else if (req.body.from === '') {
