@@ -434,13 +434,13 @@
                 icons-and-text
               >
                 <v-tabs-slider></v-tabs-slider>
-                <v-tab @click="play_dialog.title='Revision'" href="#tab-1">Revision</v-tab>
-                <v-tab @click="play_dialog.title='Examen'" href="#tab-2">Examen</v-tab>
+                <v-tab @click="play_dialog.title='Revision'" href="#tab-1">{{textes[no_langue][22]}}</v-tab>
+                <v-tab @click="play_dialog.title='Examen'" href="#tab-2">{{textes[no_langue][23]}}</v-tab>
               </v-tabs>
               <v-tabs-items v-model="tab">
                 <v-tab-item value="tab-1">
                   <v-card flat>
-                    <v-card-text class="py-2">Revise all your cards</v-card-text>
+                    <v-card-text class="py-2">{{textes[no_langue][24]}}</v-card-text>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item value="tab-2">
@@ -457,7 +457,7 @@
                           rounded
                           dense
                           @click="play_dialog.examen.key=true"
-                        >Key</v-btn>
+                        >{{textes[no_langue][13]}}</v-btn>
                         <v-btn
                           :color="!play_dialog.examen.key ? 'purple white--text' : 'grey lighten-1'"
                           style="min-width:100px"
@@ -467,7 +467,7 @@
                           depressed
                           rounded
                           @click="play_dialog.examen.key=false"
-                        >Value</v-btn>
+                        >{{textes[no_langue][26]}}</v-btn>
                       </div>
                     </div>
                   </v-card>
@@ -484,7 +484,7 @@
           </div>
           <div
             style="font-size:12px; margin-top:5px"
-          >More features to come : countdown per card, order normal/continous/random, choose number of cards to train, etc</div>
+          >{{textes[no_langue][25]}}</div>
         </v-flex>
       </v-layout>
     </v-container>
@@ -631,7 +631,12 @@ export default {
         'Veuillez vous connecter svp !',
         'Champ obligatoire.',
         'Min 2 caractères',
-        'Sauver'
+        'Sauver',
+        'Révision',
+        'Examen',
+        'Révisez toutes vos cartes',
+        'Plus de fonctionnalités à venir: compte à rebours par carte, ordre normal / continu / aléatoire, nombre de cartes à former, etc.',
+        'Valeur'
       ],
       [
         'Add your dock !',
@@ -655,7 +660,12 @@ export default {
         'Please log in!',
         'Required.',
         'Min 2 characters',
-        'Save'
+        'Save',
+        'Revision',
+        'Exam',
+        'Revise all your cards',
+        'More features to come : countdown per card, order normal/continous/random, choose number of cards to train, etc',
+        'Value'
       ]
     ]
   }),
